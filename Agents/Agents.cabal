@@ -27,6 +27,9 @@ library
   exposed-modules:
       Lib
   other-modules:
+      Items.Enviroment
+      Items.EnvObjects
+      Items.Utils
       Paths_Agents
   hs-source-dirs:
       src

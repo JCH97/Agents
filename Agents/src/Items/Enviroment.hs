@@ -1,9 +1,10 @@
-module Items.Envairoment (
+module Items.Enviroment (
     Child (..),
     Dirt (..),
     Obstacle (..),
     Agent (..),
-    Corral (..)
+    Corral (..),
+    Env (..)
 ) where
 
 
@@ -13,12 +14,14 @@ import Items.Obstacle (Obstacle (Obstacle))
 import Items.Agent (Agent (Agent))
 import Items.Corral (Corral (Corral))
 
-data Env = Env
-{
+data Env = Env {
     children :: Child,
     agents :: Agent,
     corral :: Corral,
     dirty :: Dirt,
     obstacles :: Obstacle,
     dim :: (Int, Int)
-}
+} deriving (Show)
+
+
+

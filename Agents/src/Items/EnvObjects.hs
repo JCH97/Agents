@@ -1,30 +1,29 @@
 module Items.EnvObjects(
-    Child (..)
+    Child (..),
+    Agent (..),
+    Obstacle (..),
+    Dirt (..),
+    Corral (..)
 ) where
 
-data Child = Child
-{   
+data Child = Child {   
     value :: [(Int, Int)]
 } deriving (Show)
 
 
-data Agent = Agent 
-{
+data Agent = Agent {
     value :: [(Int, Int)]
 } deriving (Show)
 
 
-data Obstacle = Obstacle
-{
+data Obstacle = Obstacle {
     value :: [(Int, Int)]
 }  deriving (Show)
 
-data Dirt = Dirt 
-{
+data Dirt = Dirt {
     value :: [(Int, Int)]
 }  deriving (Show)
 
-data Corral = Corral 
-{
+data Corral = Corral {
     value :: [(Int, Int)]
 } deriving (Show)
