@@ -8,11 +8,12 @@ module Items.Enviroment (
 ) where
 
 
-import Items.EnvObjects (Child (Child))
-import Items.EnvObjects (Dirt (Dirt))
-import Items.Obstacle (Obstacle (Obstacle))
-import Items.Agent (Agent (Agent))
-import Items.Corral (Corral (Corral))
+import Items.Child (Child (Child), existChild)
+import Items.Dirt (Dirt (Dirt), existDirty)
+import Items.Obstacle (Obstacle (Obstacle), existObstacle)
+import Items.Agent (Agent (Agent), existAgent)
+import Items.Corral (Corral (Corral), existCorral)
+import Items.Utils (randomNumb)
 
 data Env = Env {
     children :: Child,
@@ -24,4 +25,6 @@ data Env = Env {
 } deriving (Show)
 
 
+isEmpty :: Env -> (Int, Int) -> Bool
+isEmpty env@Env { children = ch, agents = ag, corral = co, dirty = di, obstacles = ob } pos = not (existChild ch pos || existAgent ag pos || existCorral co pos || existDirty di pos || existObstacle ob pos)
 

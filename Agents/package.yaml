@@ -27,6 +27,13 @@ library:
   source-dirs: src
   exposed-modules:
     - Lib
+    - Items.Agent
+    - Items.Child
+    - Items.Corral
+    - Items.Dirt
+    - Items.Enviroment
+    - Items.Obstacle
+    - Items.Utils
 
 executables:
   Agents-exe:

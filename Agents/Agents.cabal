@@ -26,10 +26,14 @@ source-repository head
 library
   exposed-modules:
       Lib
-  other-modules:
+      Items.Agent
+      Items.Child
+      Items.Corral
+      Items.Dirt
       Items.Enviroment
-      Items.EnvObjects
+      Items.Obstacle
       Items.Utils
+  other-modules:
       Paths_Agents
   hs-source-dirs:
       src
