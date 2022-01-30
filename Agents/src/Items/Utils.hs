@@ -1,19 +1,20 @@
 module Items.Utils (
-    randomNumb,
+    randomList,
     contains,
     isValidPos, 
     address,
     addressMax,
     buildCorralAux,
     mockBuildCorralAux,
-    mockMakeAdjMax
+    mockMakeAdjMax,
+    mockLenght
 ) where 
 
 
-import System.Random (Random (randomRs), StdGen)
+import System.Random (Random (randomRs), StdGen, newStdGen, getStdGen)
 
-randomNumb :: Int -> StdGen -> [Int]
-randomNumb n = randomRs (0, n)
+randomList :: Int -> StdGen -> [Int]
+randomList n = randomRs (0, n)
 
 contains ::  (Eq a) => [a] -> a -> Bool
 contains [] _ = False
@@ -49,3 +50,17 @@ mockBuildCorralAux =
 
 mockMakeAdjMax :: [(Int, Int)]
 mockMakeAdjMax = makeAdjMax (1, 1)
+
+lenght :: [a] -> Int
+lenght [] = 0
+lenght (x : xs) = 1 + lenght xs
+
+mockLenght :: Int
+mockLenght = lenght [1, 2, 3, 4, 5]
+
+-- -- mxm, take
+-- getListRnd :: Int -> Int -> [Int] 
+-- getListRnd mxm t = do
+--     g <- newStdGen
+--     let rnd = randomNumb mxm g
+--     take t rnd

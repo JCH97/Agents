@@ -7,9 +7,10 @@ module Items.Corral (
 import Items.Utils (contains)
 
 data Corral = Corral {
-    value :: [(Int, Int)]
+    value :: [(Int, Int)],
+    center :: (Int, Int)
 } deriving (Show)
 
 
 existCorral :: Corral -> (Int, Int) -> Bool
-existCorral Corral { value = val } pos = contains val pos
+existCorral Corral { value = val, center = c } pos = contains val pos
