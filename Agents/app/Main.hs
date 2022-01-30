@@ -1,7 +1,7 @@
 module Main where
 
 import Lib ()
-import Items.Enviroment (mockIsEmpty)
+import Items.Enviroment (mockIsEmpty, mockBuildCorral, mockBuildChildren)
 import Items.Utils (mockBuildCorralAux, mockMakeAdjMax)
 
 -- import System.Random (newStdGen, getStdGen)
@@ -11,11 +11,17 @@ main = do
     -- let mock1 = mockIsEmpty
     -- print mock1
 
-    let mock2 = mockBuildCorralAux 
-    print mock2
+    -- let mock2 = mockBuildCorralAux 
+    -- print mock2
 
     -- let mock3 = mockMakeAdjMax
     -- print mock3
+
+    -- let mock4 = mockBuildCorral
+    -- print mock4
+
+    let mock5 = mockBuildChildren
+    print mock5
 
     -- g <- newStdGen
     -- let rnd = randomNumb 6 g
