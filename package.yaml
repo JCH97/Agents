@@ -1,9 +1,9 @@
 name:                Agents
 version:             0.1.0.0
-github:              "githubuser/Agents"
+github:              "JCH97/Agents"
 license:             BSD3
-author:              "Author name here"
-maintainer:          "example@example.com"
+author:              "Jose Carlos Hernandez"
+maintainer:          "jc1997hdez@gmail.com"
 copyright:           "2022 Author name here"
 
 extra-source-files:
