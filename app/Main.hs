@@ -1,8 +1,8 @@
 module Main where
 
 import Lib ()
-import Items.Enviroment (mockIsEmpty, mockBuildCorral, mockBuildChildren, buildEnv, mockBuildEnv)
-import Items.Utils (mockBuildCorralAux, mockMakeAdjMax, randomList, mockLenght)
+import Items.Enviroment (mockIsEmpty, mockBuildCorral, mockBuildChildren, buildEnv, mockBuildEnv, mockTest, mockValidsAdjForAgentMove, mockChildBFS)
+import Items.Utils (mockBuildCorralAux, mockMakeAdjMax, randomList, mockLenght, mockMakePairs)
 
 import System.Random (newStdGen, getStdGen)
 
@@ -31,8 +31,20 @@ main = do
     -- let c = min 45 1
     -- print c
 
-    let mock7 = mockBuildEnv g
-    print mock7
+    -- let mock7 = mockBuildEnv g
+    -- print mock7
+
+    -- let mock8 = mockMakePairs
+    -- print mock8
+
+    -- let mock9 = mockTest
+    -- print mock9
+
+    -- let mock10 = mockValidsAdjForAgentMove
+    -- print mock10
+
+    let mock11 = mockChildBFS
+    print mock11
 
     -- let rnd = randomList 6 g
     -- print (take 4 rnd)

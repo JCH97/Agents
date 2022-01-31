@@ -7,7 +7,10 @@ module Items.Utils (
     buildCorralAux,
     mockBuildCorralAux,
     mockMakeAdjMax,
-    mockLenght
+    mockLenght,
+    makeAdjMax,
+    makePairs,
+    mockMakePairs
 ) where 
 
 
@@ -57,6 +60,15 @@ lenght (x : xs) = 1 + lenght xs
 
 mockLenght :: Int
 mockLenght = lenght [1, 2, 3, 4, 5]
+
+-- empareja el segundo parametro con cada uno de los que esta en el array
+-- ej: [(1, 1), (1, 2), (1, 3)] (5, 5) => [( (1, 1), (5, 5) ), ( (1, 2), (5, 5) ), ( (1, 3), (5, 5) )]
+makePairs :: [(Int, Int)] -> (Int, Int) -> [((Int, Int), (Int, Int))]
+makePairs pairs tuple = [(k, tuple) | k <- pairs]
+
+
+mockMakePairs :: [((Int, Int), (Int, Int))]
+mockMakePairs = makePairs [(1, 1), (2, 2)] (3, 3)
 
 -- -- mxm, take
 -- getListRnd :: Int -> Int -> [Int] 
