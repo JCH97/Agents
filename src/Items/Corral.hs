@@ -3,7 +3,6 @@ module Items.Corral (
     existCorral
 ) where
 
-
 import Items.Utils (contains)
 
 data Corral = Corral {

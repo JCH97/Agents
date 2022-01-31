@@ -385,7 +385,7 @@ getPosToMoveChild env@Env { children = ch, agents = ag, corral = co,
                            childPos 
                            g 
                                 = let freePos = [t | t <- makeAdjMax childPos, isValidPos d t,
-                                                                               isEmpty env t
+                                                                               isEmpty env t,
                                                                                not (contains ig t)]
                                       -- como en la lista de posibles se incluye la posicion actual del ninno 
                                       -- entonces eso significa que se queda en la posicion y no se mueve, luego no hay que

@@ -1,6 +1,8 @@
 module Items.Dirt (
     Dirt (..),
-    existDirty
+    existDirty,
+    removeDirty,
+    mockRemoveDirty
 ) where
 
 
@@ -12,3 +14,9 @@ data Dirt = Dirt {
 
 existDirty :: Dirt -> (Int, Int) -> Bool
 existDirty Dirt { value = val } pos = contains val pos
+
+removeDirty :: Dirt -> (Int, Int) -> Dirt
+removeDirty Dirt { value = val } dirtyPos = Dirt { value = [t | t <- val, t /= dirtyPos] }
+
+mockRemoveDirty :: Dirt
+mockRemoveDirty = removeDirty Dirt { value = [(1, 2)] } (1, 2)
