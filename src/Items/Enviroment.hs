@@ -13,7 +13,8 @@ module Items.Enviroment (
     mockTest,
     mockValidsAdjForChildBFS,
     mockChildBFS,
-    mockNextPosToMove
+    mockNextPosToMove, 
+    mockDirtyBFS
 ) where
 
 
@@ -211,6 +212,54 @@ mockValidsAdjForChildBFS = validsAdjForChildBFS Env {
                                                     []
                                                     (2, 1)
                                                     (10, 10)
+
+
+-- TODO: garantizar antes de llamar a dirtyBFS que haya suciedad para garantizar la correctitud del algoritmo
+-- env, startPos, checked, stack, way => retorna la posicion a la que tengo que moverme para estar mas cerca de la suciedad
+dirtyBFS :: Env -> (Int, Int) -> [(Int, Int)] -> [(Int, Int)] -> [((Int, Int), (Int, Int))] -> (Int, Int)
+dirtyBFS _ startPos _ [] _ = startPos
+dirtyBFS env@Env { children = ch, agents = ag, corral = co, dirty = di, obstacles = ob, dim = d } 
+         startPos
+         checked
+         stack@(x : xs)
+         way
+            | existDirty di x = nextPosToMove startPos x way
+            -- | x == (1, 3) = (-1, -1)
+            | otherwise =  dirtyBFS env 
+                                    startPos 
+                                    (x : checked)
+                                    (xs ++ validsAdjForDirtyBFS env checked x d)
+                                    (way ++ makePairs (validsAdjForDirtyBFS env checked x d) x)
+
+
+validsAdjForDirtyBFS :: Env -> [(Int, Int)] -> (Int, Int) -> (Int, Int) -> [(Int, Int)]
+validsAdjForDirtyBFS env@Env { children = ch, agents = ag, corral = co,
+                                dirty = di, obstacles = ob, dim = d } 
+                      checked 
+                      source 
+                      dim = [t | t <- makeAdjMax source, isValidPos dim t, 
+                                                        not (existChild ch t),
+                                                        not (existObstacle ob t),
+                                                        not (existAgent ag t),
+                                                        not (existCorral co t),
+                                                        -- isEmpty env t, 
+                                                        not (contains checked t)]
+
+mockDirtyBFS :: (Int, Int)
+mockDirtyBFS = dirtyBFS Env { 
+                                children = Child [(2, 4)],
+                                agents = Agent [(3, 1), (2, 1)],
+                                corral = Corral [(8, 8), (8, 9)] (8, 8), 
+                                dirty = Dirt [(3, 0), (2, 5), (0, 2)], 
+                                obstacles = Obstacle [(1, 1), (2, 2), (0, 4)], 
+                                dim = (10, 10)
+                            }
+                        (0, 0)
+                        []
+                        [(0, 0)]
+                        [] 
+
+
 
 
 -- source end way
