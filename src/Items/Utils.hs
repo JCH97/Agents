@@ -10,7 +10,8 @@ module Items.Utils (
     mockLenght,
     makeAdjMax,
     makePairs,
-    mockMakePairs
+    mockMakePairs,
+    lenght
 ) where 
 
 
@@ -65,7 +66,6 @@ mockLenght = lenght [1, 2, 3, 4, 5]
 -- ej: [(1, 1), (1, 2), (1, 3)] (5, 5) => [( (1, 1), (5, 5) ), ( (1, 2), (5, 5) ), ( (1, 3), (5, 5) )]
 makePairs :: [(Int, Int)] -> (Int, Int) -> [((Int, Int), (Int, Int))]
 makePairs pairs tuple = [(k, tuple) | k <- pairs]
-
 
 mockMakePairs :: [((Int, Int), (Int, Int))]
 mockMakePairs = makePairs [(1, 1), (2, 2)] (3, 3)

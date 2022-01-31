@@ -11,8 +11,9 @@ module Items.Enviroment (
     buildEnv,
     mockBuildEnv,
     mockTest,
-    mockValidsAdjForAgentMove,
-    mockChildBFS
+    mockValidsAdjForChildBFS,
+    mockChildBFS,
+    mockNextPosToMove
 ) where
 
 
@@ -153,7 +154,6 @@ mockBuildEnv gen = buildEnv (10, 10) 6 4 3 gen
 
 
 -- TODO: garantizar antes de llamar a childBFS que hayan ninnos en fuera del corral, hace falta para la correctitud del algoritmo
-
 -- env, startPos, checked, stack, way => retorna la posicion a la que tengo que moverme para estar mas cerca del ninno
 childBFS :: Env -> (Int, Int) -> [(Int, Int)] -> [(Int, Int)] -> [((Int, Int), (Int, Int))] -> (Int, Int)
 childBFS _ startPos _ [] _ = startPos
@@ -162,13 +162,13 @@ childBFS env@Env { children = ch, agents = ag, corral = co, dirty = di, obstacle
          checked
          stack@(x : xs)
          way
-            | existChild ch x = nextPosToMove x way
+            | existChild ch x = nextPosToMove startPos x way
             -- | x == (1, 3) = (-1, -1)
             | otherwise =  childBFS env 
                                     startPos 
                                     (x : checked)
-                                    (xs ++ validsAdjForAgentMove env checked x d)
-                                    (way ++ makePairs (validsAdjForAgentMove env checked x d) x)
+                                    (xs ++ validsAdjForChildBFS env checked x d)
+                                    (way ++ makePairs (validsAdjForChildBFS env checked x d) x)
 
 mockChildBFS :: (Int, Int)
 mockChildBFS = childBFS Env { 
@@ -186,8 +186,8 @@ mockChildBFS = childBFS Env {
 
 
 -- env, checked, source, dim
-validsAdjForAgentMove :: Env -> [(Int, Int)] -> (Int, Int) -> (Int, Int) -> [(Int, Int)]
-validsAdjForAgentMove env@Env { children = ch, agents = ag, corral = co,
+validsAdjForChildBFS :: Env -> [(Int, Int)] -> (Int, Int) -> (Int, Int) -> [(Int, Int)]
+validsAdjForChildBFS env@Env { children = ch, agents = ag, corral = co,
                                 dirty = di, obstacles = ob, dim = d } 
                       checked 
                       source 
@@ -199,8 +199,8 @@ validsAdjForAgentMove env@Env { children = ch, agents = ag, corral = co,
                                                         -- isEmpty env t, 
                                                         not (contains checked t)]
 
-mockValidsAdjForAgentMove :: [(Int, Int)]
-mockValidsAdjForAgentMove = validsAdjForAgentMove Env { 
+mockValidsAdjForChildBFS :: [(Int, Int)]
+mockValidsAdjForChildBFS = validsAdjForChildBFS Env { 
                                                         children = Child [(2, 4)],
                                                         agents = Agent [(3, 1)],
                                                         corral = Corral [(4, 4), (4, 5)] (4, 4), 
@@ -213,9 +213,24 @@ mockValidsAdjForAgentMove = validsAdjForAgentMove Env {
                                                     (10, 10)
 
 
+-- source end way
+nextPosToMove :: (Int, Int) -> (Int, Int) -> [((Int, Int), (Int, Int))] -> (Int, Int)
+nextPosToMove source end way@((ch, p) : xs) | getParent end way == source = end
+                                            | otherwise = nextPosToMove source (getParent end way) way
 
-nextPosToMove :: (Int, Int) -> [((Int, Int), (Int, Int))] -> (Int, Int)
-nextPosToMove tuple way = (100, 100)
+-- node way // get parent for node
+getParent :: (Int, Int) ->  [((Int, Int), (Int, Int))] -> (Int, Int)
+getParent child [] = child
+getParent child ((c, p) : xs) = if c == child then p else getParent child xs
+
+mockNextPosToMove :: (Int, Int)
+mockNextPosToMove = nextPosToMove (0, 0) (2, 4) [((1, 0), (0, 0)),
+                                                 ((0, 1), (0, 0)),
+                                                 ((0, 2), (0, 1)),
+                                                 ((1, 2), (0, 2)),
+                                                 ((1, 3), (1, 2)),
+                                                 ((2, 3), (1, 3)),
+                                                 ((2, 4), (2, 3))]
 
 mockTest :: [(Int, Int)]
 mockTest = [t | t <- makeAdjMax (1, 1), isValidPos (10, 10) t, not (contains [(1, 1), (2, 2)] t)]
