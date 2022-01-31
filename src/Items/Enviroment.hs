@@ -17,7 +17,8 @@ module Items.Enviroment (
     mockDirtyBFS,
     mockGetPlaceOnCorralAux,
     mockManhantanDistance,
-    mockMoveAgentToCorral
+    mockMoveAgentToCorral,
+    mockGetPosToMoveChild
 ) where
 
 
@@ -26,7 +27,7 @@ import Items.Dirt (Dirt (Dirt), existDirty)
 import Items.Obstacle (Obstacle (Obstacle), existObstacle)
 import Items.Agent (Agent (Agent), existAgent)
 import Items.Corral (Corral (Corral), existCorral)
-import Items.Utils (randomList, isValidPos, buildCorralAux, contains, makeAdjMax, makePairs)
+import Items.Utils (randomList, isValidPos, buildCorralAux, contains, makeAdjMax, makePairs, lenght)
 import System.Random (StdGen)
 
 data Env = Env {
@@ -348,13 +349,13 @@ moveAgentToCorral env@Env{ children = ch, agents = ag, corral = co,
 
 mockMoveAgentToCorral :: (Int, Int)
 mockMoveAgentToCorral = moveAgentToCorral  Env { 
-                                            children = Child [(2, 4)],
-                                            agents = Agent [(3, 1), (2, 1)] [],
-                                            corral = Corral [(3, 5)] (3, 5), 
-                                            dirty = Dirt [(3, 0), (2, 5), (0, 2)], 
-                                            obstacles = Obstacle [(0, 1), (2, 2), (0, 4)], 
-                                            dim = (10, 10),
-                                            ignorePositions = [(0, 2)]
+                                                children = Child [(2, 4)],
+                                                agents = Agent [(3, 1), (2, 1)] [],
+                                                corral = Corral [(3, 5)] (3, 5), 
+                                                dirty = Dirt [(3, 0), (2, 5), (0, 2)], 
+                                                obstacles = Obstacle [(0, 1), (2, 2), (0, 4)], 
+                                                dim = (10, 10),
+                                                ignorePositions = [(0, 2)]
                                             }
                                             (0, 0)
                                             (3, 5)
@@ -376,3 +377,33 @@ validsAdjForMoveAgentToCorral env@Env { children = ch, agents = ag, corral = co,
                                                                     not (contains ig t),
                                                                     -- isEmpty env t, 
                                                                     not (contains checked t)]
+
+-- env, boardDim, generador
+getPosToMoveChild :: Env ->  (Int, Int) -> StdGen -> (Int, Int)
+getPosToMoveChild env@Env { children = ch, agents = ag, corral = co,
+                            dirty = di, obstacles = ob, dim = d, ignorePositions = ig } 
+                           childPos 
+                           g 
+                                = let freePos = [t | t <- makeAdjMax childPos, isValidPos d t,
+                                                                               isEmpty env t
+                                                                               not (contains ig t)]
+                                      -- como en la lista de posibles se incluye la posicion actual del ninno 
+                                      -- entonces eso significa que se queda en la posicion y no se mueve, luego no hay que
+                                      -- validarlo
+                                      l = lenght freePos
+                                      idx = head (randomList l g)
+                                  in (childPos : freePos) !! idx
+
+mockGetPosToMoveChild :: StdGen -> (Int, Int)
+mockGetPosToMoveChild g = getPosToMoveChild Env { 
+                                                    children = Child [(2, 4)],
+                                                    agents = Agent [(3, 1), (2, 1)] [],
+                                                    corral = Corral [(3, 5)] (3, 5), 
+                                                    dirty = Dirt [(3, 0), (2, 5), (0, 2)], 
+                                                    obstacles = Obstacle [(0, 1), (2, 2), (0, 4)], 
+                                                    dim = (10, 10),
+                                                    ignorePositions = [(0, 2)]
+                                                }
+                                                (2, 4)
+                                                g
+                                  
