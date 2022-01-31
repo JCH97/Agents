@@ -32,7 +32,8 @@ data Env = Env {
     corral :: Corral,
     dirty :: Dirt,
     obstacles :: Obstacle,
-    dim :: (Int, Int)
+    dim :: (Int, Int),
+    ignorePositions :: [(Int, Int)] -- son posiciones que por razon X tienen que ser ignoradas durantes los BFSs
 } deriving (Show)
 
 
@@ -46,11 +47,13 @@ mockIsEmpty :: Bool
 mockIsEmpty = 
     isEmpty 
         Env { children = Child [(1, 1)], 
-              agents = Agent [(1, 1), (1, 1)], 
+              agents = Agent [(1, 1), (1, 1)] [], 
               corral = Corral [(1, 1)] (1, 1), 
               dirty = Dirt [(1, 1)], 
               obstacles =  Obstacle [(1, 1)],
-              dim = (2, 3) }
+              dim = (2, 3),
+              ignorePositions = []
+            }
         (1, 2)
 
 
@@ -60,11 +63,12 @@ buildCorral init dim count =
     let co =  buildCorralAux [init] [] dim count
     in Env { 
                 children = Child [],
-                agents = Agent [],
+                agents = Agent [] [],
                 corral = Corral co init,
                 dirty =  Dirt [],
                 obstacles = Obstacle [],
-                dim = dim
+                dim = dim,
+                ignorePositions = []
            }
 
 mockBuildCorral :: Env
@@ -74,7 +78,7 @@ buildObstacles :: Env -> [Int] -> Int -> Env
 buildObstacles env [] _ = env
 buildObstacles env _ 0 = env
 buildObstacles env@Env { children = ch, agents = ag, corral = co,
-                        dirty = di, obstacles = Obstacle ob, dim = d } (x : y : xs) count =
+                        dirty = di, obstacles = Obstacle ob, dim = d, ignorePositions = ig } (x : y : xs) count =
     if isEmpty env (x, y) && isValidPos d (x, y)
         then buildObstacles Env { 
                                     children = ch, 
@@ -82,7 +86,8 @@ buildObstacles env@Env { children = ch, agents = ag, corral = co,
                                     corral = co, 
                                     dirty = di, 
                                     obstacles =  Obstacle ([(x, y)] ++ ob), 
-                                    dim = d 
+                                    dim = d,
+                                    ignorePositions = ig
                                 }
                             xs (count - 1)
         else buildObstacles env xs count
@@ -91,16 +96,17 @@ buildObstacles env@Env { children = ch, agents = ag, corral = co,
 buildAgents :: Env -> [Int] -> Int -> Env
 buildAgents env [] _ = env
 buildAgents env _ 0 = env
-buildAgents env@Env { children = ch, agents = Agent ag, corral = co,
-                        dirty = di, obstacles = ob, dim = d } (x : y : xs) count =
+buildAgents env@Env { children = ch, agents = Agent ag _, corral = co,
+                        dirty = di, obstacles = ob, dim = d, ignorePositions = ig } (x : y : xs) count =
     if isEmpty env (x, y) && isValidPos d (x, y)
         then buildAgents Env { 
                                     children = ch, 
-                                    agents = Agent ([(x, y)] ++ ag),
+                                    agents = Agent ([(x, y)] ++ ag) [],
                                     corral = co, 
                                     dirty = di, 
                                     obstacles =  ob,
-                                    dim = d 
+                                    dim = d,
+                                    ignorePositions = ig
                                 }
                             xs (count - 1)
         else buildAgents env xs count
@@ -111,7 +117,7 @@ buildChildren :: Env -> [Int] -> Int -> Env
 buildChildren env [] _ = env
 buildChildren env _ 0  = env
 buildChildren env@Env { children = Child ch, agents = ag, corral = co,
-                        dirty = di, obstacles = ob, dim = d } (x : y : xs) count =
+                        dirty = di, obstacles = ob, dim = d, ignorePositions = ig } (x : y : xs) count =
     if isEmpty env (x, y) && isValidPos d (x, y)
         then buildChildren Env { 
                                     children = Child ([(x, y)] ++ ch), 
@@ -119,7 +125,8 @@ buildChildren env@Env { children = Child ch, agents = ag, corral = co,
                                     corral = co, 
                                     dirty = di, 
                                     obstacles = ob, 
-                                    dim = d 
+                                    dim = d,
+                                    ignorePositions = ig
                                 }
                             xs (count - 1)
         else buildChildren env xs count
@@ -128,11 +135,12 @@ buildChildren env@Env { children = Child ch, agents = ag, corral = co,
 mockBuildChildren :: Env
 mockBuildChildren = buildChildren Env { 
                                         children = Child [(1, 1), (1, 2)],
-                                        agents = Agent [(2, 3)],
+                                        agents = Agent [(2, 3)] [],
                                         corral = Corral [(4, 4), (4, 5)] (1, 2), 
                                         dirty = Dirt [], 
                                         obstacles = Obstacle [(3, 7), (2, 7), (1, 8)], 
-                                        dim = (10, 10)
+                                        dim = (10, 10),
+                                        ignorePositions = []
                                       }
                                    [1, 2, 3, 4, 10, 6, 7, 8, 1, 2, 5, 3, 6, 7, 8, 1, 9, 1, 4, 6, 7, 2, 3, 4, 5, 1, 2, 3]  3
 
@@ -142,7 +150,7 @@ buildEnv :: (Int, Int) -> Int -> Int -> Int -> StdGen -> Env
 buildEnv dim@(dx, dy) childrenQty obstaclesQty agentsQty gen = 
     let ddx = dx - 1
         ddy = dy - 1
-        menor = min ddx ddy
+        menor = min ddx ddy -- TODO: aqui hay posiciones del tablero en las que nunca se va a generar nada
         rnd = randomList menor gen
         corralEnv = buildCorral (head rnd, head rnd) dim childrenQty
         obstaclesEnv = buildObstacles corralEnv rnd obstaclesQty
@@ -174,11 +182,12 @@ childBFS env@Env { children = ch, agents = ag, corral = co, dirty = di, obstacle
 mockChildBFS :: (Int, Int)
 mockChildBFS = childBFS Env { 
                                 children = Child [(2, 4)],
-                                agents = Agent [(3, 1)],
+                                agents = Agent [(3, 1)] [],
                                 corral = Corral [(8, 8), (8, 9)] (8, 8), 
                                 dirty = Dirt [], 
                                 obstacles = Obstacle [(1, 1), (2, 2), (0, 4)], 
-                                dim = (10, 10)
+                                dim = (10, 10),
+                                ignorePositions = []
                             }
                         (0, 0)
                         []
@@ -189,7 +198,7 @@ mockChildBFS = childBFS Env {
 -- env, checked, source, dim
 validsAdjForChildBFS :: Env -> [(Int, Int)] -> (Int, Int) -> (Int, Int) -> [(Int, Int)]
 validsAdjForChildBFS env@Env { children = ch, agents = ag, corral = co,
-                                dirty = di, obstacles = ob, dim = d } 
+                                dirty = di, obstacles = ob, dim = d, ignorePositions = ig } 
                       checked 
                       source 
                       dim = [t | t <- makeAdjMax source, isValidPos dim t, 
@@ -197,17 +206,19 @@ validsAdjForChildBFS env@Env { children = ch, agents = ag, corral = co,
                                                         not (existObstacle ob t),
                                                         not (existAgent ag t),
                                                         not (existCorral co t),
+                                                        not (contains ig t),
                                                         -- isEmpty env t, 
                                                         not (contains checked t)]
 
 mockValidsAdjForChildBFS :: [(Int, Int)]
 mockValidsAdjForChildBFS = validsAdjForChildBFS Env { 
                                                         children = Child [(2, 4)],
-                                                        agents = Agent [(3, 1)],
+                                                        agents = Agent [(3, 1)] [],
                                                         corral = Corral [(4, 4), (4, 5)] (4, 4), 
                                                         dirty = Dirt [], 
                                                         obstacles = Obstacle [(1, 1), (2, 2), (0, 4)], 
-                                                        dim = (10, 10)
+                                                        dim = (10, 10),
+                                                        ignorePositions = []
                                                        }
                                                     []
                                                     (2, 1)
@@ -234,7 +245,7 @@ dirtyBFS env@Env { children = ch, agents = ag, corral = co, dirty = di, obstacle
 
 validsAdjForDirtyBFS :: Env -> [(Int, Int)] -> (Int, Int) -> (Int, Int) -> [(Int, Int)]
 validsAdjForDirtyBFS env@Env { children = ch, agents = ag, corral = co,
-                                dirty = di, obstacles = ob, dim = d } 
+                                dirty = di, obstacles = ob, dim = d, ignorePositions = ig } 
                       checked 
                       source 
                       dim = [t | t <- makeAdjMax source, isValidPos dim t, 
@@ -242,17 +253,20 @@ validsAdjForDirtyBFS env@Env { children = ch, agents = ag, corral = co,
                                                         not (existObstacle ob t),
                                                         not (existAgent ag t),
                                                         not (existCorral co t),
+                                                        not (contains ig t),
                                                         -- isEmpty env t, 
                                                         not (contains checked t)]
+
 
 mockDirtyBFS :: (Int, Int)
 mockDirtyBFS = dirtyBFS Env { 
                                 children = Child [(2, 4)],
-                                agents = Agent [(3, 1), (2, 1)],
+                                agents = Agent [(3, 1), (2, 1)] [],
                                 corral = Corral [(8, 8), (8, 9)] (8, 8), 
                                 dirty = Dirt [(3, 0), (2, 5), (0, 2)], 
                                 obstacles = Obstacle [(1, 1), (2, 2), (0, 4)], 
-                                dim = (10, 10)
+                                dim = (10, 10),
+                                ignorePositions = [(0, 2)]
                             }
                         (0, 0)
                         []
@@ -283,3 +297,5 @@ mockNextPosToMove = nextPosToMove (0, 0) (2, 4) [((1, 0), (0, 0)),
 
 mockTest :: [(Int, Int)]
 mockTest = [t | t <- makeAdjMax (1, 1), isValidPos (10, 10) t, not (contains [(1, 1), (2, 2)] t)]
+
+

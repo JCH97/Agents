@@ -6,7 +6,8 @@ module Items.Agent (
 import Items.Utils (contains)
 
 data Agent = Agent {
-    value :: [(Int, Int)]
+    value :: [(Int, Int)],
+    carrying :: [(Int, Int)]
 } deriving (Show)
 
 
