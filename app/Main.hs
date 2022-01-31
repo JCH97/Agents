@@ -1,7 +1,7 @@
 module Main where
 
 import Lib ()
-import Items.Enviroment (mockIsEmpty, mockBuildCorral, mockBuildChildren, buildEnv, mockBuildEnv, mockTest, mockValidsAdjForChildBFS, mockChildBFS, mockNextPosToMove, mockDirtyBFS)
+import Items.Enviroment (mockIsEmpty, mockBuildCorral, mockBuildChildren, buildEnv, mockBuildEnv, mockTest, mockValidsAdjForChildBFS, mockChildBFS, mockNextPosToMove, mockDirtyBFS, mockGetPlaceOnCorralAux, mockManhantanDistance, mockMoveAgentToCorral)
 import Items.Utils (mockBuildCorralAux, mockMakeAdjMax, randomList, mockLenght, mockMakePairs)
 
 import System.Random (newStdGen, getStdGen)
@@ -49,8 +49,17 @@ main = do
     -- let mock12 = mockNextPosToMove
     -- print mock12
 
-    let mock13 = mockDirtyBFS
-    print mock13
+    -- let mock13 = mockDirtyBFS
+    -- print mock13
+
+    -- let mock14 = mockGetPlaceOnCorralAux
+    -- print mock14
+
+    let mock15 = mockMoveAgentToCorral
+    print mock15
+
+    -- let mock15 = mockManhantanDistance
+    -- print mock15
 
     -- let rnd = randomList 6 g
     -- print (take 4 rnd)

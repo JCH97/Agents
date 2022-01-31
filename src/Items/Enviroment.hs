@@ -14,7 +14,10 @@ module Items.Enviroment (
     mockValidsAdjForChildBFS,
     mockChildBFS,
     mockNextPosToMove, 
-    mockDirtyBFS
+    mockDirtyBFS,
+    mockGetPlaceOnCorralAux,
+    mockManhantanDistance,
+    mockMoveAgentToCorral
 ) where
 
 
@@ -298,4 +301,78 @@ mockNextPosToMove = nextPosToMove (0, 0) (2, 4) [((1, 0), (0, 0)),
 mockTest :: [(Int, Int)]
 mockTest = [t | t <- makeAdjMax (1, 1), isValidPos (10, 10) t, not (contains [(1, 1), (2, 2)] t)]
 
+getPlaceOnCorral :: Env -> (Int, Int)
+getPlaceOnCorral env@Env { children = ch, agents = ag, corral = Corral val center,
+                           dirty = di, obstacles = ob, dim = d, ignorePositions = ig } = 
+                               getPlaceOnCorralAux val center 1000000 center ig
 
+-- posicionesDelCorral, centroDelCorral, mejorDistHastaAhora, respuestaTemporal, PosicionesAIgnorar
+getPlaceOnCorralAux :: [(Int, Int)] -> (Int, Int) -> Int -> (Int, Int) -> [(Int, Int)] -> (Int, Int)
+getPlaceOnCorralAux [] _ _ temporalAns _ = temporalAns
+getPlaceOnCorralAux (x : xs) center best temporalAns ignorePos
+                                --  | 
+                                 | contains ignorePos x = getPlaceOnCorralAux xs center best temporalAns ignorePos
+                                 | manhatanDistance x center < best = 
+                                                            getPlaceOnCorralAux xs center (manhatanDistance x center) x ignorePos
+                                 | otherwise = getPlaceOnCorralAux xs center best temporalAns ignorePos
+
+mockGetPlaceOnCorralAux :: (Int, Int) 
+mockGetPlaceOnCorralAux = getPlaceOnCorralAux [(0, 1), (0, 2), (0, 3), (1, 1), (1, 2), (1, 3), (2, 1), (2, 2), (2, 3)]
+                                              (1, 2)
+                                              1000000
+                                              (1, 2)
+                                              [(1, 2)]
+
+manhatanDistance :: (Int, Int) -> (Int, Int) -> Int
+manhatanDistance (x1, y1) (x2, y2) = abs (x2 - x1) + abs (y2 - y1)
+
+mockManhantanDistance :: Int
+mockManhantanDistance = manhatanDistance (2, 3) (1, 2)
+
+-- env, startAgentPos, posToLeaveChild, stack, checked, way
+moveAgentToCorral :: Env -> (Int, Int) -> (Int, Int) -> [(Int, Int)] -> [(Int, Int)] -> [((Int, Int), (Int, Int))] -> (Int, Int)
+moveAgentToCorral env@Env{ children = ch, agents = ag, corral = co,
+                          dirty = di, obstacles = ob, dim = d, ignorePositions = ig } 
+                   source 
+                   end 
+                   stack@(x : xs) 
+                   checked 
+                   way  
+                      | x == end = nextPosToMove source x way
+                      | otherwise = moveAgentToCorral env
+                                                      source
+                                                      end
+                                                      (xs ++ validsAdjForMoveAgentToCorral env checked x d)
+                                                      (x : checked)
+                                                      (way ++ makePairs (validsAdjForMoveAgentToCorral env checked x d) x)
+
+mockMoveAgentToCorral :: (Int, Int)
+mockMoveAgentToCorral = moveAgentToCorral  Env { 
+                                            children = Child [(2, 4)],
+                                            agents = Agent [(3, 1), (2, 1)] [],
+                                            corral = Corral [(3, 5)] (3, 5), 
+                                            dirty = Dirt [(3, 0), (2, 5), (0, 2)], 
+                                            obstacles = Obstacle [(0, 1), (2, 2), (0, 4)], 
+                                            dim = (10, 10),
+                                            ignorePositions = [(0, 2)]
+                                            }
+                                            (0, 0)
+                                            (3, 5)
+                                            [(0, 0)]
+                                            []
+                                            []
+                                            
+
+validsAdjForMoveAgentToCorral :: Env -> [(Int, Int)] -> (Int, Int) -> (Int, Int) -> [(Int, Int)]
+validsAdjForMoveAgentToCorral env@Env { children = ch, agents = ag, corral = co,
+                                dirty = di, obstacles = ob, dim = d, ignorePositions = ig } 
+                                checked 
+                                source 
+                                dim = [t | t <- makeAdjMax source, isValidPos dim t, 
+                                                                    not (existChild ch t),
+                                                                    not (existObstacle ob t),
+                                                                    not (existAgent ag t),
+                                                                    -- not (existCorral co t),
+                                                                    not (contains ig t),
+                                                                    -- isEmpty env t, 
+                                                                    not (contains checked t)]
