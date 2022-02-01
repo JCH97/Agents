@@ -3,7 +3,8 @@ module Items.Child (
     existChild,
     existChildOutCorral,
     updateChild,
-    mockUpdateChild
+    mockUpdateChild, 
+    removeChild
  ) where
 
 

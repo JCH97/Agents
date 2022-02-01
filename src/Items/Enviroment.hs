@@ -18,14 +18,17 @@ module Items.Enviroment (
     mockGetPlaceOnCorralAux,
     mockManhantanDistance,
     mockMoveAgentToCorral,
-    mockGetPosToMoveChild
+    mockGetPosToMoveChild, 
+    mockAgentMoveCase1,
+    mockAgentMoveCase4,
+    mockMoveOneAgent
 ) where
 
 
-import Items.Child (Child (Child), existChild)
-import Items.Dirt (Dirt (Dirt), existDirty)
+import Items.Child (Child (Child), existChild, removeChild, updateChild, existChildOutCorral)
+import Items.Dirt (Dirt (Dirt), existDirty, removeDirty)
 import Items.Obstacle (Obstacle (Obstacle), existObstacle)
-import Items.Agent (Agent (Agent), existAgent)
+import Items.Agent (Agent (Agent), existAgent, agentLeaveChild, updateAgent, agentGetChild)
 import Items.Corral (Corral (Corral), existCorral)
 import Items.Utils (randomList, isValidPos, buildCorralAux, contains, makeAdjMax, makePairs, lenght)
 import System.Random (StdGen)
@@ -209,7 +212,7 @@ validsAdjForChildBFS env@Env { children = ch, agents = ag, corral = co,
                                                         -- not (existChild ch t),
                                                         not (existObstacle ob t),
                                                         not (existAgent ag t),
-                                                        not (existCorral co t),
+                                                        -- not (existCorral co t),
                                                         not (contains ig t),
                                                         -- isEmpty env t, 
                                                         not (contains checked t)]
@@ -406,4 +409,164 @@ mockGetPosToMoveChild g = getPosToMoveChild Env {
                                                 }
                                                 (2, 4)
                                                 g
-                                  
+moveAgents :: Env -> Env
+moveAgents env@Env { children = ch, agents = Agent value _, corral = co,
+                     dirty = di, obstacles = ob, dim = d, ignorePositions = ig }
+                         = moveAgentsAux env value
+
+-- env, posicionesDeLosRobots
+moveAgentsAux :: Env -> [(Int, Int)] -> Env
+moveAgentsAux env [] = env
+moveAgentsAux env (p: ps) = let newEnv = moveOneAgent env p
+                            in moveAgentsAux newEnv ps
+
+moveOneAgent :: Env -> (Int, Int) -> Env
+moveOneAgent env@Env { children = ch, agents = Agent unused1 carrying, corral = co,
+                       dirty = di, obstacles = ob, dim = d, ignorePositions = ig } 
+             agentPos
+                        | contains carrying agentPos
+                            = agentMoveCase1 env agentPos (getPlaceOnCorral env)
+                        | existDirty di agentPos
+                            =  agentMoveCase2 env agentPos
+                        | existChild ch agentPos 
+                            = agentMoveCase3 env agentPos
+                        | otherwise = agentMoveCase4 env agentPos
+
+-- env, startAgentPos, posToLeaveChild
+-- Case 1: El robot tiene un ninno cargado => hay que moverlo pal corral
+agentMoveCase1 :: Env -> (Int, Int) -> (Int, Int) -> Env
+agentMoveCase1 env@Env { children = ch, agents = ag, corral = co,
+                     dirty = di, obstacles = ob, dim = d, ignorePositions = ig }
+               startPos 
+               endPos 
+                   = 
+                    if startPos == endPos then 
+                        let newAgent = agentLeaveChild ag startPos
+                            -- newIgnorePos
+                        in Env {
+                                children = ch,
+                                agents = newAgent,
+                                corral = co,
+                                dirty = di,
+                                obstacles = ob,
+                                dim = d,
+                                ignorePositions = (startPos : ig)
+                               }
+                        -- deja al nino en la posicion => 
+                        --  2. decir que el agente no carga ya al ninno
+                        --  3. poner esa posicion en el corral como ignorada   
+
+                    else
+                        -- moverse 
+                        let newAgentPos = moveAgentToCorral env startPos endPos [startPos] [] []
+                            newAgent1 = updateAgent ag startPos newAgentPos
+                        in Env {
+                                children = ch,
+                                agents = newAgent1,
+                                corral = co,
+                                dirty = di,
+                                obstacles = ob,
+                                dim = d,
+                                ignorePositions = ig
+                               }
+
+mockAgentMoveCase1 :: Env 
+mockAgentMoveCase1 = agentMoveCase1 Env { 
+                                            children = Child [(2, 4)],
+                                            agents = Agent [(0, 0), (2, 1)] [],
+                                            corral = Corral [(3, 5)] (3, 5), 
+                                            dirty = Dirt [(3, 0), (2, 5), (0, 2)], 
+                                            obstacles = Obstacle [(0, 1), (2, 2), (0, 4)], 
+                                            dim = (10, 10),
+                                            ignorePositions = [(0, 2)]
+                                        }
+                                    (0, 0)
+                                    (3, 5)
+
+-- El robot esta parado sobre una suciedad => limpiala
+agentMoveCase2 :: Env -> (Int, Int) -> Env
+agentMoveCase2 env@Env { children = ch, agents = ag, corral = co,
+                    dirty = di, obstacles = ob, dim = d, ignorePositions = ig }
+               pos 
+                    =  let newDirty = removeDirty di pos
+                        in Env {
+                                children = ch,
+                                agents = ag,
+                                corral = co,
+                                dirty = newDirty,
+                                obstacles = ob,
+                                dim = d,
+                                ignorePositions = ig
+                               }
+
+-- si el robot esta parado sobre un ninno => lo quito del tablero y  lo cargo
+agentMoveCase3 :: Env -> (Int, Int) -> Env
+agentMoveCase3 env@Env { children = ch, agents = ag, corral = co,
+                    dirty = di, obstacles = ob, dim = d, ignorePositions = ig }
+                pos 
+                    = let newChildren = removeChild ch pos
+                          agentUpdt = agentGetChild ag pos
+                      in Env {
+                                children = newChildren,
+                                agents = agentUpdt,
+                                corral = co,
+                                dirty = di,
+                                obstacles = ob,
+                                dim = d,
+                                ignorePositions = ig
+                              }
+mockAgentMoveCase3 :: Env
+mockAgentMoveCase3 = agentMoveCase3 Env { 
+                                        children = Child [(2, 4), (2, 0)],
+                                        agents = Agent [(0, 0), (2, 1)] [],
+                                        corral = Corral [(3, 5)] (3, 5), 
+                                        dirty = Dirt [(3, 0), (2, 5), (0, 2)], 
+                                        obstacles = Obstacle [(1, 1), (2, 2), (0, 4)], 
+                                        dim = (10, 10),
+                                        ignorePositions = [(0, 2)]
+                                    }
+                                    (0, 0)
+
+-- buscar el nino mas cercano en el corral y moverse hacia el
+agentMoveCase4 :: Env -> (Int, Int) -> Env
+agentMoveCase4 env@Env { children = ch, agents = ag, corral = co,
+                    dirty = di, obstacles = ob, dim = d, ignorePositions = ig }
+                pos
+                    | existChildOutCorral ch = 
+                                let newPosAgent = childBFS env pos [] [pos] []
+                                    newAgents = updateAgent ag pos newPosAgent
+                                in Env {
+                                            children = ch,
+                                            agents = newAgents,
+                                            corral = co,
+                                            dirty = di,
+                                            obstacles = ob,
+                                            dim = d,
+                                            ignorePositions = ig
+                                        }
+
+                    | otherwise = env
+
+mockAgentMoveCase4 :: Env
+mockAgentMoveCase4 = agentMoveCase4 Env { 
+                                        children = Child [(2, 4), (2, 0)],
+                                        agents = Agent [(0, 0), (2, 1)] [],
+                                        corral = Corral [(3, 5)] (3, 5), 
+                                        dirty = Dirt [(3, 0), (2, 5), (0, 2)], 
+                                        obstacles = Obstacle [(1, 1), (2, 2), (0, 4)], 
+                                        dim = (10, 10),
+                                        ignorePositions = [(0, 2)]
+                                    }
+                                    (0, 0)
+
+mockMoveOneAgent :: Env
+mockMoveOneAgent = moveOneAgent Env { 
+                                        children = Child [(2, 4)],
+                                        agents = Agent [(0, 0), (2, 1)] [(2, 1)],
+                                        corral = Corral [(3, 5)] (3, 5), 
+                                        dirty = Dirt [(3, 0), (2, 5), (0, 2)], 
+                                        obstacles = Obstacle [(1, 2), (2, 2), (0, 4)], 
+                                        dim = (10, 10),
+                                        ignorePositions = [(0, 2)]
+                                    }
+                                (2, 1)

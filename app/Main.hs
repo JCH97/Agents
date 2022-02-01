@@ -1,7 +1,7 @@
 module Main where
 
 import Lib ()
-import Items.Enviroment (mockIsEmpty, mockBuildCorral, mockBuildChildren, buildEnv, mockBuildEnv, mockTest, mockValidsAdjForChildBFS, mockChildBFS, mockNextPosToMove, mockDirtyBFS, mockGetPlaceOnCorralAux, mockManhantanDistance, mockMoveAgentToCorral, mockGetPosToMoveChild)
+import Items.Enviroment (mockIsEmpty, mockBuildCorral, mockBuildChildren, buildEnv, mockBuildEnv, mockTest, mockValidsAdjForChildBFS, mockChildBFS, mockNextPosToMove, mockDirtyBFS, mockGetPlaceOnCorralAux, mockManhantanDistance, mockMoveAgentToCorral, mockGetPosToMoveChild, mockAgentMoveCase1, mockAgentMoveCase4, mockMoveOneAgent)
 import Items.Utils (mockBuildCorralAux, mockMakeAdjMax, randomList, mockLenght, mockMakePairs)
 import Items.Child (mockUpdateChild)
 import Items.Agent (mockAgentGetChild, mockAgentLeaveChild)
@@ -76,8 +76,17 @@ main = do
     -- let mock20 = mockAgentLeaveChild
     -- print mock20
     
-    let mock21 = mockRemoveDirty
-    print mock21
+    -- let mock21 = mockRemoveDirty
+    -- print mock21
+
+    -- let mock22 = mockAgentMoveCase1
+    -- print mock22
+
+    -- let mock23 = mockAgentMoveCase4
+    -- print mock23
+
+    let mock24 = mockMoveOneAgent
+    print mock24
 
     -- let rnd = randomList 6 g
     -- print (take 4 rnd)
