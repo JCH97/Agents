@@ -123,6 +123,7 @@ buildAgents env@Env { children = ch, agents = Agent ag _, corral = co,
 
 
 
+-- env generador cantidadDeNinnosAGenerar
 buildChildren :: Env -> [Int] -> Int -> Env
 buildChildren env [] _ = env
 buildChildren env _ 0  = env
@@ -140,6 +141,27 @@ buildChildren env@Env { children = Child ch, agents = ag, corral = co,
                                 }
                             xs (count - 1)
         else buildChildren env xs count
+
+-- TODO: all llamar a esto asegurar que se cree mas suciedad que la que habia para que esto tenga sentido
+buildDirty :: Env -> [Int] -> Int -> Env
+buildDirty env [] _ = env
+buildDirty env _ 0 = env
+buildDirty env@Env { children = Child ch, agents = ag, corral = co,
+                     dirty = di, obstacles = ob, dim = d, ignorePositions = ig } 
+           (x : y : xs) 
+           count 
+                =   if isEmpty env (x, y) && isValidPos d (x, y)
+                            then buildDirty Env { 
+                                                        children = Child ([(x, y)] ++ ch), 
+                                                        agents = ag,
+                                                        corral = co, 
+                                                        dirty = di, 
+                                                        obstacles = ob, 
+                                                        dim = d,
+                                                        ignorePositions = ig
+                                                    }
+                                                xs (count - 1)
+                            else buildDirty env xs count
 
 
 mockBuildChildren :: Env
