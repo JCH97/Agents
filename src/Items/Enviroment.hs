@@ -146,16 +146,16 @@ buildChildren env@Env { children = Child ch, agents = ag, corral = co,
 buildDirty :: Env -> [Int] -> Int -> Env
 buildDirty env [] _ = env
 buildDirty env _ 0 = env
-buildDirty env@Env { children = Child ch, agents = ag, corral = co,
-                     dirty = di, obstacles = ob, dim = d, ignorePositions = ig } 
+buildDirty env@Env { children = ch, agents = ag, corral = co,
+                     dirty = Dirt di, obstacles = ob, dim = d, ignorePositions = ig } 
            (x : y : xs) 
            count 
                 =   if isEmpty env (x, y) && isValidPos d (x, y)
                             then buildDirty Env { 
-                                                        children = Child ([(x, y)] ++ ch), 
+                                                        children = ch, 
                                                         agents = ag,
                                                         corral = co, 
-                                                        dirty = di, 
+                                                        dirty = Dirt ([(x, y)] ++ di), 
                                                         obstacles = ob, 
                                                         dim = d,
                                                         ignorePositions = ig
@@ -177,9 +177,9 @@ mockBuildChildren = buildChildren Env {
                                    [1, 2, 3, 4, 10, 6, 7, 8, 1, 2, 5, 3, 6, 7, 8, 1, 9, 1, 4, 6, 7, 2, 3, 4, 5, 1, 2, 3]  3
 
 
--- dim, childrenAmount, ObstacleAmount, AgentsAmount, Generator
-buildEnv :: (Int, Int) -> Int -> Int -> Int -> StdGen -> Env
-buildEnv dim@(dx, dy) childrenQty obstaclesQty agentsQty gen = 
+-- dim, childrenAmount, ObstacleAmount, AgentsAmount, DirtyAmount, Generator
+buildEnv :: (Int, Int) -> Int -> Int -> Int -> Int -> StdGen -> Env
+buildEnv dim@(dx, dy) childrenQty obstaclesQty agentsQty dirtyQty gen = 
     let ddx = dx - 1
         ddy = dy - 1
         menor = min ddx ddy -- TODO: aqui hay posiciones del tablero en las que nunca se va a generar nada
@@ -187,11 +187,12 @@ buildEnv dim@(dx, dy) childrenQty obstaclesQty agentsQty gen =
         corralEnv = buildCorral (head rnd, head rnd) dim childrenQty
         obstaclesEnv = buildObstacles corralEnv rnd obstaclesQty
         childrenEnv = buildChildren obstaclesEnv rnd childrenQty
-    in  buildAgents childrenEnv rnd agentsQty
+        agentsEnv = buildAgents childrenEnv rnd agentsQty
+    in  buildDirty agentsEnv rnd dirtyQty
 
 
 mockBuildEnv :: StdGen -> Env 
-mockBuildEnv gen = buildEnv (10, 10) 6 4 3 gen
+mockBuildEnv gen = buildEnv (10, 10) 6 4 3 2 gen
 
 
 -- TODO: garantizar antes de llamar a childBFS que hayan ninnos en fuera del corral, hace falta para la correctitud del algoritmo

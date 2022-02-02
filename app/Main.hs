@@ -34,8 +34,8 @@ main = do
     -- let c = min 45 1
     -- print c
 
-    -- let mock7 = mockBuildEnv g
-    -- print mock7
+    let mock7 = mockBuildEnv g
+    print mock7
 
     -- let mock8 = mockMakePairs
     -- print mock8
@@ -94,8 +94,8 @@ main = do
     -- let mock26 = mockRefactorObstacles
     -- print mock26
 
-    let mock27 = mockMoveOneChild g
-    print mock27
+    -- let mock27 = mockMoveOneChild g
+    -- print mock27
 
     -- let rnd = randomList 6 g
     -- print (take 4 rnd)
