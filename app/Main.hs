@@ -1,7 +1,7 @@
 module Main where
 
 import Lib ()
-import Items.Enviroment (mockIsEmpty, mockBuildCorral, mockBuildChildren, buildEnv, mockBuildEnv, mockTest, mockValidsAdjForChildBFS, mockChildBFS, mockNextPosToMove, mockDirtyBFS, mockGetPlaceOnCorralAux, mockManhantanDistance, mockMoveAgentToCorral, mockGetPosToMoveChild, mockAgentMoveCase1, mockAgentMoveCase4, mockMoveOneAgent)
+import Items.Enviroment (mockIsEmpty, mockBuildCorral, mockBuildChildren, buildEnv, mockBuildEnv, mockTest, mockValidsAdjForChildBFS, mockChildBFS, mockNextPosToMove, mockDirtyBFS, mockGetPlaceOnCorralAux, mockManhantanDistance, mockMoveAgentToCorral, mockGetPosToMoveChild, mockAgentMoveCase1, mockAgentMoveCase4, mockMoveOneAgent, mockMoveAgents, mockRefactorObstacles, mockMoveOneChild)
 import Items.Utils (mockBuildCorralAux, mockMakeAdjMax, randomList, mockLenght, mockMakePairs)
 import Items.Child (mockUpdateChild)
 import Items.Agent (mockAgentGetChild, mockAgentLeaveChild)
@@ -85,8 +85,17 @@ main = do
     -- let mock23 = mockAgentMoveCase4
     -- print mock23
 
-    let mock24 = mockMoveOneAgent
-    print mock24
+    -- let mock24 = mockMoveOneAgent
+    -- print mock24
+
+    -- let mock25 = mockMoveAgents
+    -- print mock25
+
+    -- let mock26 = mockRefactorObstacles
+    -- print mock26
+
+    let mock27 = mockMoveOneChild g
+    print mock27
 
     -- let rnd = randomList 6 g
     -- print (take 4 rnd)

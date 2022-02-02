@@ -20,7 +20,7 @@ existChild Child { value = val } pos  = contains val pos
 existChildOutCorral :: Child -> Bool
 existChildOutCorral Child { value = val } = lenght val >= 0
 
--- oldChildStruct, oldPos, newPos, newChildStruct
+-- oldChildStruct, oldPos, newPos
 updateChild :: Child ->  (Int, Int) -> (Int, Int) -> Child
 updateChild Child { value = val } oldPos newPos = let temp = [t | t <- val, t /= oldPos]
                                                   in Child { value = (newPos : temp) }

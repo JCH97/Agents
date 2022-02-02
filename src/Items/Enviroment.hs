@@ -21,13 +21,16 @@ module Items.Enviroment (
     mockGetPosToMoveChild, 
     mockAgentMoveCase1,
     mockAgentMoveCase4,
-    mockMoveOneAgent
+    mockMoveOneAgent, 
+    mockMoveAgents, 
+    mockRefactorObstacles,
+    mockMoveOneChild
 ) where
 
 
 import Items.Child (Child (Child), existChild, removeChild, updateChild, existChildOutCorral)
 import Items.Dirt (Dirt (Dirt), existDirty, removeDirty)
-import Items.Obstacle (Obstacle (Obstacle), existObstacle)
+import Items.Obstacle (Obstacle (Obstacle), existObstacle, updateObstacle)
 import Items.Agent (Agent (Agent), existAgent, agentLeaveChild, updateAgent, agentGetChild)
 import Items.Corral (Corral (Corral), existCorral)
 import Items.Utils (randomList, isValidPos, buildCorralAux, contains, makeAdjMax, makePairs, lenght)
@@ -381,14 +384,110 @@ validsAdjForMoveAgentToCorral env@Env { children = ch, agents = ag, corral = co,
                                                                     -- isEmpty env t, 
                                                                     not (contains checked t)]
 
--- env, boardDim, generador
+moveChilds :: Env -> StdGen -> Env
+moveChilds env@Env { children = Child ch, agents = ag, corral = co,
+                     dirty = di, obstacles = ob, dim = d, ignorePositions = ig } gen = 
+                                        moveAllChilds env ch gen
+ 
+moveAllChilds :: Env -> [(Int, Int)] -> StdGen -> Env
+moveAllChilds env [] _ = env
+moveAllChilds env (x : xs) gen  
+                        = let newEnv = moveOneChild  env x gen
+                          in moveAllChilds newEnv xs gen
+
+moveOneChild :: Env -> (Int, Int) -> StdGen -> Env
+moveOneChild env@Env { children = ch, agents = ag, corral = co,
+                     dirty = di, obstacles = ob, dim = d, ignorePositions = ig }
+              childPos
+              gen
+                    = let newChildPos =  getPosToMoveChild env childPos gen                    
+                       in refactorObstacles env childPos newChildPos
+
+mockMoveOneChild :: StdGen -> Env
+mockMoveOneChild g = moveOneChild Env { 
+                                        children = Child [(2, 4), (3, 2)],
+                                        agents = Agent [(3, 1), (2, 1)] [],
+                                        corral = Corral [(3, 5)] (3, 5), 
+                                        dirty = Dirt [], 
+                                        obstacles = Obstacle [(2, 2), (1, 2)], 
+                                        dim = (10, 10),
+                                        ignorePositions = []
+                                      }
+                                (3, 2)
+                                g
+
+-- obstacleStruct, oldChildPos, newChildPos 
+-- este metodo se usa para cuando un nino se mueve hacia un obstaculo y tiene que empujarlo
+refactorObstacles :: Env -> (Int, Int) -> (Int, Int) -> Env
+refactorObstacles env@Env { children = ch, agents = ag, corral = co,
+                            dirty = di, obstacles = ob, dim = d, ignorePositions = ig }
+                  t1@(x1, y1)  -- oldChildPos
+                  t2@(x2, y2)  -- newChildPos --- aqui tambien esta el obstaculo que hay que quitar
+                            | not (existObstacle ob t2) =
+                                let updatedChildren = updateChild ch t1 t2
+                                in Env {
+                                            children = updatedChildren,
+                                            agents = ag,
+                                            corral = co,
+                                            dirty = di,
+                                            obstacles = ob,
+                                            dim = d,
+                                            ignorePositions = ig
+                                        }
+                            | otherwise = let x = x2 - x1
+                                              y = y2 - y1
+                                           in refactorObstaclesAux env (x, y) t2 t2 t1
+
+-- env, direccionDeDesplzamiento, antiguaPosicionDelObstaculo posicionTemporal oldChildPos
+refactorObstaclesAux :: Env -> (Int, Int) -> (Int, Int) -> (Int, Int) -> (Int, Int) -> Env
+refactorObstaclesAux env@Env { children = ch, agents = ag, corral = co,
+                             dirty = di, obstacles = ob, dim = d, ignorePositions = ig }
+                     direction@(x, y)
+                     oldPos -- posicion del obstaculo a mover ---- tambien contiene la posicion donde colocar el nuevo ninno
+                     temporalPos@(ox, oy)
+                     oldChildPos
+                           | not (isValidPos d temporalPos) = env
+                           | isEmpty env temporalPos 
+                                        = let newObstacles = updateObstacle ob oldPos temporalPos
+                                              newChilds = updateChild ch oldChildPos oldPos
+                                          in Env {
+                                                    children = newChilds,
+                                                    agents = ag,
+                                                    corral = co,
+                                                    dirty = di,
+                                                    obstacles = newObstacles,
+                                                    dim = d,
+                                                    ignorePositions = ig
+                                                }
+                           | otherwise = let newTemporalPosX = x + ox
+                                             newTemporalPosY = y + oy
+                                          in refactorObstaclesAux env direction oldPos (newTemporalPosX, newTemporalPosY) oldChildPos
+
+mockRefactorObstacles :: Env
+mockRefactorObstacles = refactorObstacles Env { 
+                                                    children = Child [(2, 4), (3, 2)],
+                                                    agents = Agent [(3, 1), (2, 1)] [],
+                                                    corral = Corral [(3, 5)] (3, 5), 
+                                                    dirty = Dirt [], 
+                                                    obstacles = Obstacle [(2, 2), (1, 2), (0, 2)], 
+                                                    dim = (10, 10),
+                                                    ignorePositions = []
+                                                }
+                                           (3, 2)
+                                           (2, 2)
+
+
+-- env, childPos, generador
 getPosToMoveChild :: Env ->  (Int, Int) -> StdGen -> (Int, Int)
 getPosToMoveChild env@Env { children = ch, agents = ag, corral = co,
                             dirty = di, obstacles = ob, dim = d, ignorePositions = ig } 
                            childPos 
                            g 
                                 = let freePos = [t | t <- makeAdjMax childPos, isValidPos d t,
-                                                                               isEmpty env t,
+                                                                            --    isEmpty env t,
+                                                                               not (existChild ch t),
+                                                                            --    not (existObstacle ob t),
+                                                                               not (existAgent ag t),   
                                                                                not (contains ig t)]
                                       -- como en la lista de posibles se incluye la posicion actual del ninno 
                                       -- entonces eso significa que se queda en la posicion y no se mueve, luego no hay que
@@ -570,3 +669,14 @@ mockMoveOneAgent = moveOneAgent Env {
                                         ignorePositions = [(0, 2)]
                                     }
                                 (2, 1)
+
+mockMoveAgents :: Env 
+mockMoveAgents = moveAgents Env { 
+                                    children = Child [(2, 4)],
+                                    agents = Agent [(0, 1), (2, 1)] [(2, 1)],
+                                    corral = Corral [(5, 5)] (5, 5), 
+                                    dirty = Dirt [(3, 0), (2, 5), (0, 2)], 
+                                    obstacles = Obstacle [(1, 2), (2, 2), (0, 4)], 
+                                    dim = (10, 10),
+                                    ignorePositions = []
+                                }
