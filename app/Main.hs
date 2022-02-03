@@ -1,7 +1,7 @@
 module Main where
 
 import Lib ()
-import Items.Enviroment (mockIsEmpty, mockBuildCorral, mockBuildChildren, buildEnv, mockBuildEnv, mockTest, mockValidsAdjForChildBFS, mockChildBFS, mockNextPosToMove, mockDirtyBFS, mockGetPlaceOnCorralAux, mockManhantanDistance, mockMoveAgentToCorral, mockGetPosToMoveChild, mockAgentMoveCase1, mockAgentMoveCase4, mockMoveOneAgent, mockMoveAgents, mockRefactorObstacles, mockMoveOneChild, moveChilds, moveAgents, getPercentDirty, Env (..))
+import Items.Enviroment (mockIsEmpty, mockBuildCorral, mockBuildChildren, buildEnv, mockBuildEnv, mockTest, mockValidsAdjForChildBFS, mockChildBFS, mockNextPosToMove, mockDirtyBFS, mockGetPlaceOnCorralAux, mockManhantanDistance, mockMoveAgentToCorral, mockGetPosToMoveChild, mockAgentMoveCase1, mockAgentMoveCase4, mockMoveOneAgent, mockMoveAgents, mockRefactorObstacles, mockMoveOneChild, moveChilds, moveAgents, getPercentDirty, mockAddRandomDirty, Env (..))
 import Items.Utils (mockBuildCorralAux, mockMakeAdjMax, randomList, mockLenght, mockMakePairs)
 import Items.Child (mockUpdateChild)
 import Items.Agent (mockAgentGetChild, mockAgentLeaveChild)
@@ -101,6 +101,9 @@ main = do
     -- let rnd = randomList 6 g
     -- print (take 4 rnd)
     -- let g1 = sum1 getCar 3 in print g1[(Int, Int)]
+
+    -- let mock28 = mockAddRandomDirty (randomList 9 g)
+    -- print mock28
 
     simulationType1
 

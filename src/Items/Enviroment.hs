@@ -27,7 +27,8 @@ module Items.Enviroment (
     mockMoveAgents, 
     mockRefactorObstacles,
     mockMoveOneChild,
-    getPercentDirty
+    getPercentDirty,
+    mockAddRandomDirty
 ) where
 
 
@@ -732,4 +733,43 @@ getPercentDirty env@Env { children = Child ch, agents = Agent ag _, corral = co,
                                 lenIgnored = lenght ig
                                 freeCelds = totalCelds - (lenChildren + lenAgents + lenObstacles + lenIgnored)
                             in realToFrac(100 * lenDirty) /  realToFrac freeCelds
-        
+
+-- env, amountDirtyToAdd, numeroDeIntentosParaAgregarLaBasura, valoresRendoms
+addRandmoDirty :: Env -> Int -> Int -> [Int] -> Env
+addRandmoDirty env 0 _ _  = env
+addRandmoDirty env _ 0 _ = env
+addRandmoDirty env _ _ [] = env
+addRandmoDirty env@Env { children = ch, agents = ag, corral = co,
+                        dirty = Dirt di, obstacles = ob, dim = d, ignorePositions = ig }
+                amount
+                tries
+                rnd@(x: y : xs)
+                    | isEmpty env (x, y) = let updatedDirty = ((x, y) : di)
+                                            in addRandmoDirty Env {
+                                                                    children = ch,
+                                                                    agents = ag,
+                                                                    corral = co,
+                                                                    dirty = Dirt updatedDirty,
+                                                                    obstacles = ob,
+                                                                    dim = d,
+                                                                    ignorePositions = ig
+                                                                }
+                                                                (amount - 1)
+                                                                (tries - 1)
+                                                                xs
+                    | otherwise = addRandmoDirty env amount (tries - 1) xs
+
+mockAddRandomDirty :: [Int] -> Env 
+mockAddRandomDirty rnd = addRandmoDirty Env { 
+                                        children = Child [(2, 4)],
+                                        agents = Agent [(0, 0), (2, 1)] [(2, 1)],
+                                        corral = Corral [(3, 5)] (3, 5), 
+                                        dirty = Dirt [(3, 0), (2, 5), (0, 2)], 
+                                        obstacles = Obstacle [(1, 2), (2, 2), (0, 4)], 
+                                        dim = (10, 10),
+                                        ignorePositions = [(0, 2)]
+                                    }
+                                    10
+                                    1000
+                                    rnd
+
