@@ -18,7 +18,7 @@ existChild :: Child -> (Int, Int) -> Bool
 existChild Child { value = val } pos  = contains val pos
 
 existChildOutCorral :: Child -> Bool
-existChildOutCorral Child { value = val } = lenght val >= 0
+existChildOutCorral Child { value = val } = lenght val > 0
 
 -- oldChildStruct, oldPos, newPos
 updateChild :: Child ->  (Int, Int) -> (Int, Int) -> Child

@@ -1,13 +1,14 @@
 module Main where
 
 import Lib ()
-import Items.Enviroment (mockIsEmpty, mockBuildCorral, mockBuildChildren, buildEnv, mockBuildEnv, mockTest, mockValidsAdjForChildBFS, mockChildBFS, mockNextPosToMove, mockDirtyBFS, mockGetPlaceOnCorralAux, mockManhantanDistance, mockMoveAgentToCorral, mockGetPosToMoveChild, mockAgentMoveCase1, mockAgentMoveCase4, mockMoveOneAgent, mockMoveAgents, mockRefactorObstacles, mockMoveOneChild)
+import Items.Enviroment (mockIsEmpty, mockBuildCorral, mockBuildChildren, buildEnv, mockBuildEnv, mockTest, mockValidsAdjForChildBFS, mockChildBFS, mockNextPosToMove, mockDirtyBFS, mockGetPlaceOnCorralAux, mockManhantanDistance, mockMoveAgentToCorral, mockGetPosToMoveChild, mockAgentMoveCase1, mockAgentMoveCase4, mockMoveOneAgent, mockMoveAgents, mockRefactorObstacles, mockMoveOneChild, moveChilds, moveAgents, Env (..))
 import Items.Utils (mockBuildCorralAux, mockMakeAdjMax, randomList, mockLenght, mockMakePairs)
 import Items.Child (mockUpdateChild)
 import Items.Agent (mockAgentGetChild, mockAgentLeaveChild)
 import Items.Dirt (mockRemoveDirty)
 
-import System.Random (newStdGen, getStdGen)
+import System.Random (StdGen, newStdGen, getStdGen)
+import Control.Monad (when)
 
 main :: IO()
 main = do
@@ -34,8 +35,8 @@ main = do
     -- let c = min 45 1
     -- print c
 
-    let mock7 = mockBuildEnv g
-    print mock7
+    -- let mock7 = mockBuildEnv g
+    -- print mock7
 
     -- let mock8 = mockMakePairs
     -- print mock8
@@ -100,3 +101,28 @@ main = do
     -- let rnd = randomList 6 g
     -- print (take 4 rnd)
     -- let g1 = sum1 getCar 3 in print g1[(Int, Int)]
+
+    simulationType1
+
+-- dim, childrenAmount, ObstacleAmount, AgentsAmount, DirtyAmount, Generator
+simulationType1 :: IO()
+simulationType1 = do
+    g <- newStdGen
+    let env = buildEnv (5, 5) 3 2 2 5 g
+
+    print env
+
+    let finalEnv = simulationType1Aux env 1000 g
+
+    print finalEnv
+    
+simulationType1Aux :: Env -> Int -> StdGen -> Env
+simulationType1Aux env 0 _ = env
+simulationType1Aux env count gen = do 
+
+    -- let updtEnv = 
+
+    let newEnv1 = moveChilds env gen
+    let newEnv2 = moveAgents newEnv1
+
+    simulationType1Aux newEnv2 (count - 1) gen

@@ -5,10 +5,12 @@ module Items.Enviroment (
     Agent (..),
     Corral (..),
     Env (..),
+    buildEnv,
+    moveChilds,
+    moveAgents,
     mockIsEmpty,
     mockBuildCorral,
     mockBuildChildren, 
-    buildEnv,
     mockBuildEnv,
     mockTest,
     mockValidsAdjForChildBFS,
@@ -29,7 +31,7 @@ module Items.Enviroment (
 
 
 import Items.Child (Child (Child), existChild, removeChild, updateChild, existChildOutCorral)
-import Items.Dirt (Dirt (Dirt), existDirty, removeDirty)
+import Items.Dirt (Dirt (Dirt), existDirty, removeDirty, existDirtyInBoard, addDirtyInPos)
 import Items.Obstacle (Obstacle (Obstacle), existObstacle, updateObstacle)
 import Items.Agent (Agent (Agent), existAgent, agentLeaveChild, updateAgent, agentGetChild)
 import Items.Corral (Corral (Corral), existCorral)
@@ -361,6 +363,7 @@ mockManhantanDistance = manhatanDistance (2, 3) (1, 2)
 
 -- env, startAgentPos, posToLeaveChild, stack, checked, way
 moveAgentToCorral :: Env -> (Int, Int) -> (Int, Int) -> [(Int, Int)] -> [(Int, Int)] -> [((Int, Int), (Int, Int))] -> (Int, Int)
+moveAgentToCorral _ source _ [] _ _  = source
 moveAgentToCorral env@Env{ children = ch, agents = ag, corral = co,
                           dirty = di, obstacles = ob, dim = d, ignorePositions = ig } 
                    source 
@@ -446,13 +449,14 @@ refactorObstacles env@Env { children = ch, agents = ag, corral = co,
                             dirty = di, obstacles = ob, dim = d, ignorePositions = ig }
                   t1@(x1, y1)  -- oldChildPos
                   t2@(x2, y2)  -- newChildPos --- aqui tambien esta el obstaculo que hay que quitar
-                            | not (existObstacle ob t2) =
+                            | not (existObstacle ob t2) = -- aqui se mueve el ninno si no hay obstaculos
                                 let updatedChildren = updateChild ch t1 t2
+                                    updatedDirty = addDirtyInPos di t1
                                 in Env {
                                             children = updatedChildren,
                                             agents = ag,
                                             corral = co,
-                                            dirty = di,
+                                            dirty = updatedDirty,
                                             obstacles = ob,
                                             dim = d,
                                             ignorePositions = ig
@@ -470,14 +474,15 @@ refactorObstaclesAux env@Env { children = ch, agents = ag, corral = co,
                      temporalPos@(ox, oy)
                      oldChildPos
                            | not (isValidPos d temporalPos) = env
-                           | isEmpty env temporalPos 
+                           | isEmpty env temporalPos -- aqui se mueve el ninno si tiene que empujar obstaculos
                                         = let newObstacles = updateObstacle ob oldPos temporalPos
                                               newChilds = updateChild ch oldChildPos oldPos
+                                              updatedDirty = addDirtyInPos di oldChildPos
                                           in Env {
                                                     children = newChilds,
                                                     agents = ag,
                                                     corral = co,
-                                                    dirty = di,
+                                                    dirty = updatedDirty,
                                                     obstacles = newObstacles,
                                                     dim = d,
                                                     ignorePositions = ig
@@ -550,7 +555,7 @@ moveOneAgent env@Env { children = ch, agents = Agent unused1 carrying, corral = 
                             = agentMoveCase1 env agentPos (getPlaceOnCorral env)
                         | existDirty di agentPos
                             =  agentMoveCase2 env agentPos
-                        | existChild ch agentPos 
+                        | existChild ch agentPos && not (contains ig agentPos)
                             = agentMoveCase3 env agentPos
                         | otherwise = agentMoveCase4 env agentPos
 
@@ -666,15 +671,26 @@ agentMoveCase4 env@Env { children = ch, agents = ag, corral = co,
                                             dim = d,
                                             ignorePositions = ig
                                         }
-
+                    | existDirtyInBoard di = 
+                                let newPosAgent = dirtyBFS env pos [] [pos] []
+                                    newAgents = updateAgent ag pos newPosAgent
+                                in Env {
+                                        children = ch,
+                                        agents = newAgents,
+                                        corral = co,
+                                        dirty = di,
+                                        obstacles = ob,
+                                        dim = d,
+                                        ignorePositions = ig
+                                    }
                     | otherwise = env
 
 mockAgentMoveCase4 :: Env
 mockAgentMoveCase4 = agentMoveCase4 Env { 
-                                        children = Child [(2, 4), (2, 0)],
+                                        children = Child [],
                                         agents = Agent [(0, 0), (2, 1)] [],
                                         corral = Corral [(3, 5)] (3, 5), 
-                                        dirty = Dirt [(3, 0), (2, 5), (0, 2)], 
+                                        dirty = Dirt [], 
                                         obstacles = Obstacle [(1, 1), (2, 2), (0, 4)], 
                                         dim = (10, 10),
                                         ignorePositions = [(0, 2)]

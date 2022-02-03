@@ -2,11 +2,13 @@ module Items.Dirt (
     Dirt (..),
     existDirty,
     removeDirty,
-    mockRemoveDirty
+    mockRemoveDirty, 
+    existDirtyInBoard,
+    addDirtyInPos
 ) where
 
 
-import Items.Utils (contains)
+import Items.Utils (contains, lenght)
 
 data Dirt = Dirt {
     value :: [(Int, Int)]
@@ -20,3 +22,12 @@ removeDirty Dirt { value = val } dirtyPos = Dirt { value = [t | t <- val, t /= d
 
 mockRemoveDirty :: Dirt
 mockRemoveDirty = removeDirty Dirt { value = [(1, 2)] } (1, 2)
+
+existDirtyInBoard :: Dirt -> Bool 
+existDirtyInBoard Dirt { value = val } = lenght val > 0
+
+addDirtyInPos :: Dirt -> (Int, Int) -> Dirt 
+addDirtyInPos dirty@Dirt { value = val } pos@(x, y) = if mod (x + y) 2 == 0 then
+                                                            let tempDirty = [t | t <- val, t /= pos]
+                                                            in Dirt { value = (pos: tempDirty) }
+                                                      else dirty
