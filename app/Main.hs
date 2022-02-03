@@ -1,7 +1,7 @@
 module Main where
 
 import Lib ()
-import Items.Enviroment (mockIsEmpty, mockBuildCorral, mockBuildChildren, buildEnv, mockBuildEnv, mockTest, mockValidsAdjForChildBFS, mockChildBFS, mockNextPosToMove, mockDirtyBFS, mockGetPlaceOnCorralAux, mockManhantanDistance, mockMoveAgentToCorral, mockGetPosToMoveChild, mockAgentMoveCase1, mockAgentMoveCase4, mockMoveOneAgent, mockMoveAgents, mockRefactorObstacles, mockMoveOneChild, moveChilds, moveAgents, Env (..))
+import Items.Enviroment (mockIsEmpty, mockBuildCorral, mockBuildChildren, buildEnv, mockBuildEnv, mockTest, mockValidsAdjForChildBFS, mockChildBFS, mockNextPosToMove, mockDirtyBFS, mockGetPlaceOnCorralAux, mockManhantanDistance, mockMoveAgentToCorral, mockGetPosToMoveChild, mockAgentMoveCase1, mockAgentMoveCase4, mockMoveOneAgent, mockMoveAgents, mockRefactorObstacles, mockMoveOneChild, moveChilds, moveAgents, getPercentDirty, Env (..))
 import Items.Utils (mockBuildCorralAux, mockMakeAdjMax, randomList, mockLenght, mockMakePairs)
 import Items.Child (mockUpdateChild)
 import Items.Agent (mockAgentGetChild, mockAgentLeaveChild)
@@ -113,8 +113,10 @@ simulationType1 = do
     print env
 
     let finalEnv = simulationType1Aux env 1000 g
+    let percent = getPercentDirty finalEnv
 
     print finalEnv
+    print percent
     
 simulationType1Aux :: Env -> Int -> StdGen -> Env
 simulationType1Aux env 0 _ = env

@@ -26,7 +26,8 @@ module Items.Enviroment (
     mockMoveOneAgent, 
     mockMoveAgents, 
     mockRefactorObstacles,
-    mockMoveOneChild
+    mockMoveOneChild,
+    getPercentDirty
 ) where
 
 
@@ -719,3 +720,16 @@ mockMoveAgents = moveAgents Env {
                                     dim = (10, 10),
                                     ignorePositions = []
                                 }
+
+getPercentDirty :: Env -> Double
+getPercentDirty env@Env { children = Child ch, agents = Agent ag _, corral = co,
+                        dirty = Dirt di, obstacles = Obstacle ob, dim = (m, n), ignorePositions = ig } = 
+                            let lenChildren = lenght ch
+                                lenAgents = lenght ag
+                                lenDirty = lenght di
+                                lenObstacles = lenght ob
+                                totalCelds = m * n
+                                lenIgnored = lenght ig
+                                freeCelds = totalCelds - (lenChildren + lenAgents + lenObstacles + lenIgnored)
+                            in realToFrac(100 * lenDirty) /  realToFrac freeCelds
+        
