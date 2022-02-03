@@ -8,27 +8,27 @@ module Items.Enviroment (
     buildEnv,
     moveChilds,
     moveAgents,
-    mockIsEmpty,
-    mockBuildCorral,
-    mockBuildChildren, 
-    mockBuildEnv,
-    mockTest,
-    mockValidsAdjForChildBFS,
-    mockChildBFS,
-    mockNextPosToMove, 
-    mockDirtyBFS,
-    mockGetPlaceOnCorralAux,
-    mockManhantanDistance,
-    mockMoveAgentToCorral,
-    mockGetPosToMoveChild, 
-    mockAgentMoveCase1,
-    mockAgentMoveCase4,
-    mockMoveOneAgent, 
-    mockMoveAgents, 
-    mockRefactorObstacles,
-    mockMoveOneChild,
+    wrapIsEmpty,
+    wrapBuildCorral,
+    wrapBuildChildren, 
+    wrapBuildEnv,
+    wrapTest,
+    wrapValidsAdjForChildBFS,
+    wrapChildBFS,
+    wrapNextPosToMove, 
+    wrapDirtyBFS,
+    wrapGetPlaceOnCorralAux,
+    wrapManhantanDistance,
+    wrapMoveAgentToCorral,
+    wrapGetPosToMoveChild, 
+    wrapAgentMoveCase1,
+    wrapAgentMoveCase4,
+    wrapMoveOneAgent, 
+    wrapMoveAgents, 
+    wrapRefactorObstacles,
+    wrapMoveOneChild,
     getPercentDirty,
-    mockAddRandomDirty
+    wrapAddRandomDirty
 ) where
 
 
@@ -57,8 +57,8 @@ isEmpty
         = not (existChild ch pos || existAgent ag pos || existCorral co pos || existDirty di pos || existObstacle ob pos)
 
 
-mockIsEmpty :: Bool
-mockIsEmpty = 
+wrapIsEmpty :: Bool
+wrapIsEmpty = 
     isEmpty 
         Env { children = Child [(1, 1)], 
               agents = Agent [(1, 1), (1, 1)] [], 
@@ -85,8 +85,8 @@ buildCorral init dim count =
                 ignorePositions = []
            }
 
-mockBuildCorral :: Env
-mockBuildCorral = buildCorral (1, 1) (10, 10) 5
+wrapBuildCorral :: Env
+wrapBuildCorral = buildCorral (1, 1) (10, 10) 5
 
 buildObstacles :: Env -> [Int] -> Int -> Env
 buildObstacles env [] _ = env
@@ -168,8 +168,8 @@ buildDirty env@Env { children = ch, agents = ag, corral = co,
                             else buildDirty env xs count
 
 
-mockBuildChildren :: Env
-mockBuildChildren = buildChildren Env { 
+wrapBuildChildren :: Env
+wrapBuildChildren = buildChildren Env { 
                                         children = Child [(1, 1), (1, 2)],
                                         agents = Agent [(2, 3)] [],
                                         corral = Corral [(4, 4), (4, 5)] (1, 2), 
@@ -195,8 +195,8 @@ buildEnv dim@(dx, dy) childrenQty obstaclesQty agentsQty dirtyQty gen =
     in  buildDirty agentsEnv rnd dirtyQty
 
 
-mockBuildEnv :: StdGen -> Env 
-mockBuildEnv gen = buildEnv (10, 10) 6 4 3 2 gen
+wrapBuildEnv :: StdGen -> Env 
+wrapBuildEnv gen = buildEnv (10, 10) 6 4 3 2 gen
 
 
 -- TODO: garantizar antes de llamar a childBFS que hayan ninnos en fuera del corral, hace falta para la correctitud del algoritmo
@@ -216,8 +216,8 @@ childBFS env@Env { children = ch, agents = ag, corral = co, dirty = di, obstacle
                                     (xs ++ validsAdjForChildBFS env checked x d)
                                     (way ++ makePairs (validsAdjForChildBFS env checked x d) x)
 
-mockChildBFS :: (Int, Int)
-mockChildBFS = childBFS Env { 
+wrapChildBFS :: (Int, Int)
+wrapChildBFS = childBFS Env { 
                                 children = Child [(2, 4)],
                                 agents = Agent [(3, 1)] [],
                                 corral = Corral [(8, 8), (8, 9)] (8, 8), 
@@ -247,8 +247,8 @@ validsAdjForChildBFS env@Env { children = ch, agents = ag, corral = co,
                                                         -- isEmpty env t, 
                                                         not (contains checked t)]
 
-mockValidsAdjForChildBFS :: [(Int, Int)]
-mockValidsAdjForChildBFS = validsAdjForChildBFS Env { 
+wrapValidsAdjForChildBFS :: [(Int, Int)]
+wrapValidsAdjForChildBFS = validsAdjForChildBFS Env { 
                                                         children = Child [(2, 4)],
                                                         agents = Agent [(3, 1)] [],
                                                         corral = Corral [(4, 4), (4, 5)] (4, 4), 
@@ -295,8 +295,8 @@ validsAdjForDirtyBFS env@Env { children = ch, agents = ag, corral = co,
                                                         not (contains checked t)]
 
 
-mockDirtyBFS :: (Int, Int)
-mockDirtyBFS = dirtyBFS Env { 
+wrapDirtyBFS :: (Int, Int)
+wrapDirtyBFS = dirtyBFS Env { 
                                 children = Child [(2, 4)],
                                 agents = Agent [(3, 1), (2, 1)] [],
                                 corral = Corral [(8, 8), (8, 9)] (8, 8), 
@@ -323,8 +323,8 @@ getParent :: (Int, Int) ->  [((Int, Int), (Int, Int))] -> (Int, Int)
 getParent child [] = child
 getParent child ((c, p) : xs) = if c == child then p else getParent child xs
 
-mockNextPosToMove :: (Int, Int)
-mockNextPosToMove = nextPosToMove (0, 0) (2, 4) [((1, 0), (0, 0)),
+wrapNextPosToMove :: (Int, Int)
+wrapNextPosToMove = nextPosToMove (0, 0) (2, 4) [((1, 0), (0, 0)),
                                                  ((0, 1), (0, 0)),
                                                  ((0, 2), (0, 1)),
                                                  ((1, 2), (0, 2)),
@@ -332,8 +332,8 @@ mockNextPosToMove = nextPosToMove (0, 0) (2, 4) [((1, 0), (0, 0)),
                                                  ((2, 3), (1, 3)),
                                                  ((2, 4), (2, 3))]
 
-mockTest :: [(Int, Int)]
-mockTest = [t | t <- makeAdjMax (1, 1), isValidPos (10, 10) t, not (contains [(1, 1), (2, 2)] t)]
+wrapTest :: [(Int, Int)]
+wrapTest = [t | t <- makeAdjMax (1, 1), isValidPos (10, 10) t, not (contains [(1, 1), (2, 2)] t)]
 
 getPlaceOnCorral :: Env -> (Int, Int)
 getPlaceOnCorral env@Env { children = ch, agents = ag, corral = Corral val center,
@@ -350,8 +350,8 @@ getPlaceOnCorralAux (x : xs) center best temporalAns ignorePos
                                                             getPlaceOnCorralAux xs center (manhatanDistance x center) x ignorePos
                                  | otherwise = getPlaceOnCorralAux xs center best temporalAns ignorePos
 
-mockGetPlaceOnCorralAux :: (Int, Int) 
-mockGetPlaceOnCorralAux = getPlaceOnCorralAux [(0, 1), (0, 2), (0, 3), (1, 1), (1, 2), (1, 3), (2, 1), (2, 2), (2, 3)]
+wrapGetPlaceOnCorralAux :: (Int, Int) 
+wrapGetPlaceOnCorralAux = getPlaceOnCorralAux [(0, 1), (0, 2), (0, 3), (1, 1), (1, 2), (1, 3), (2, 1), (2, 2), (2, 3)]
                                               (1, 2)
                                               1000000
                                               (1, 2)
@@ -360,8 +360,8 @@ mockGetPlaceOnCorralAux = getPlaceOnCorralAux [(0, 1), (0, 2), (0, 3), (1, 1), (
 manhatanDistance :: (Int, Int) -> (Int, Int) -> Int
 manhatanDistance (x1, y1) (x2, y2) = abs (x2 - x1) + abs (y2 - y1)
 
-mockManhantanDistance :: Int
-mockManhantanDistance = manhatanDistance (2, 3) (1, 2)
+wrapManhantanDistance :: Int
+wrapManhantanDistance = manhatanDistance (2, 3) (1, 2)
 
 -- env, startAgentPos, posToLeaveChild, stack, checked, way
 moveAgentToCorral :: Env -> (Int, Int) -> (Int, Int) -> [(Int, Int)] -> [(Int, Int)] -> [((Int, Int), (Int, Int))] -> (Int, Int)
@@ -381,8 +381,8 @@ moveAgentToCorral env@Env{ children = ch, agents = ag, corral = co,
                                                       (x : checked)
                                                       (way ++ makePairs (validsAdjForMoveAgentToCorral env checked x d) x)
 
-mockMoveAgentToCorral :: (Int, Int)
-mockMoveAgentToCorral = moveAgentToCorral  Env { 
+wrapMoveAgentToCorral :: (Int, Int)
+wrapMoveAgentToCorral = moveAgentToCorral  Env { 
                                                 children = Child [(2, 4)],
                                                 agents = Agent [(3, 1), (2, 1)] [],
                                                 corral = Corral [(3, 5)] (3, 5), 
@@ -431,8 +431,8 @@ moveOneChild env@Env { children = ch, agents = ag, corral = co,
                     = let newChildPos =  getPosToMoveChild env childPos gen                    
                        in refactorObstacles env childPos newChildPos
 
-mockMoveOneChild :: StdGen -> Env
-mockMoveOneChild g = moveOneChild Env { 
+wrapMoveOneChild :: StdGen -> Env
+wrapMoveOneChild g = moveOneChild Env { 
                                         children = Child [(2, 4), (3, 2)],
                                         agents = Agent [(3, 1), (2, 1)] [],
                                         corral = Corral [(3, 5)] (3, 5), 
@@ -493,8 +493,8 @@ refactorObstaclesAux env@Env { children = ch, agents = ag, corral = co,
                                              newTemporalPosY = y + oy
                                           in refactorObstaclesAux env direction oldPos (newTemporalPosX, newTemporalPosY) oldChildPos
 
-mockRefactorObstacles :: Env
-mockRefactorObstacles = refactorObstacles Env { 
+wrapRefactorObstacles :: Env
+wrapRefactorObstacles = refactorObstacles Env { 
                                                     children = Child [(2, 4), (3, 2)],
                                                     agents = Agent [(3, 1), (2, 1)] [],
                                                     corral = Corral [(3, 5)] (3, 5), 
@@ -526,8 +526,8 @@ getPosToMoveChild env@Env { children = ch, agents = ag, corral = co,
                                       idx = head (randomList l g)
                                   in (childPos : freePos) !! idx
 
-mockGetPosToMoveChild :: StdGen -> (Int, Int)
-mockGetPosToMoveChild g = getPosToMoveChild Env { 
+wrapGetPosToMoveChild :: StdGen -> (Int, Int)
+wrapGetPosToMoveChild g = getPosToMoveChild Env { 
                                                     children = Child [(2, 4)],
                                                     agents = Agent [(3, 1), (2, 1)] [],
                                                     corral = Corral [(3, 5)] (3, 5), 
@@ -599,8 +599,8 @@ agentMoveCase1 env@Env { children = ch, agents = ag, corral = co,
                                 ignorePositions = ig
                                }
 
-mockAgentMoveCase1 :: Env 
-mockAgentMoveCase1 = agentMoveCase1 Env { 
+wrapAgentMoveCase1 :: Env 
+wrapAgentMoveCase1 = agentMoveCase1 Env { 
                                             children = Child [(2, 4)],
                                             agents = Agent [(0, 0), (2, 1)] [],
                                             corral = Corral [(3, 5)] (3, 5), 
@@ -644,8 +644,8 @@ agentMoveCase3 env@Env { children = ch, agents = ag, corral = co,
                                 dim = d,
                                 ignorePositions = ig
                               }
-mockAgentMoveCase3 :: Env
-mockAgentMoveCase3 = agentMoveCase3 Env { 
+wrapAgentMoveCase3 :: Env
+wrapAgentMoveCase3 = agentMoveCase3 Env { 
                                         children = Child [(2, 4), (2, 0)],
                                         agents = Agent [(0, 0), (2, 1)] [],
                                         corral = Corral [(3, 5)] (3, 5), 
@@ -687,8 +687,8 @@ agentMoveCase4 env@Env { children = ch, agents = ag, corral = co,
                                     }
                     | otherwise = env
 
-mockAgentMoveCase4 :: Env
-mockAgentMoveCase4 = agentMoveCase4 Env { 
+wrapAgentMoveCase4 :: Env
+wrapAgentMoveCase4 = agentMoveCase4 Env { 
                                         children = Child [],
                                         agents = Agent [(0, 0), (2, 1)] [],
                                         corral = Corral [(3, 5)] (3, 5), 
@@ -699,8 +699,8 @@ mockAgentMoveCase4 = agentMoveCase4 Env {
                                     }
                                     (0, 0)
 
-mockMoveOneAgent :: Env
-mockMoveOneAgent = moveOneAgent Env { 
+wrapMoveOneAgent :: Env
+wrapMoveOneAgent = moveOneAgent Env { 
                                         children = Child [(2, 4)],
                                         agents = Agent [(0, 0), (2, 1)] [(2, 1)],
                                         corral = Corral [(3, 5)] (3, 5), 
@@ -711,8 +711,8 @@ mockMoveOneAgent = moveOneAgent Env {
                                     }
                                 (2, 1)
 
-mockMoveAgents :: Env 
-mockMoveAgents = moveAgents Env { 
+wrapMoveAgents :: Env 
+wrapMoveAgents = moveAgents Env { 
                                     children = Child [(2, 4)],
                                     agents = Agent [(0, 1), (2, 1)] [(2, 1)],
                                     corral = Corral [(5, 5)] (5, 5), 
@@ -759,8 +759,8 @@ addRandmoDirty env@Env { children = ch, agents = ag, corral = co,
                                                                 xs
                     | otherwise = addRandmoDirty env amount (tries - 1) xs
 
-mockAddRandomDirty :: [Int] -> Env 
-mockAddRandomDirty rnd = addRandmoDirty Env { 
+wrapAddRandomDirty :: [Int] -> Env 
+wrapAddRandomDirty rnd = addRandmoDirty Env { 
                                         children = Child [(2, 4)],
                                         agents = Agent [(0, 0), (2, 1)] [(2, 1)],
                                         corral = Corral [(3, 5)] (3, 5), 

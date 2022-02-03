@@ -2,7 +2,7 @@ module Items.Dirt (
     Dirt (..),
     existDirty,
     removeDirty,
-    mockRemoveDirty, 
+    wrapRemoveDirty, 
     existDirtyInBoard,
     addDirtyInPos
 ) where
@@ -20,8 +20,8 @@ existDirty Dirt { value = val } pos = contains val pos
 removeDirty :: Dirt -> (Int, Int) -> Dirt
 removeDirty Dirt { value = val } dirtyPos = Dirt { value = [t | t <- val, t /= dirtyPos] }
 
-mockRemoveDirty :: Dirt
-mockRemoveDirty = removeDirty Dirt { value = [(1, 2)] } (1, 2)
+wrapRemoveDirty :: Dirt
+wrapRemoveDirty = removeDirty Dirt { value = [(1, 2)] } (1, 2)
 
 existDirtyInBoard :: Dirt -> Bool 
 existDirtyInBoard Dirt { value = val } = lenght val > 0

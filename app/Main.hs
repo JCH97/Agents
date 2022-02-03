@@ -1,11 +1,11 @@
 module Main where
 
 import Lib ()
-import Items.Enviroment (mockIsEmpty, mockBuildCorral, mockBuildChildren, buildEnv, mockBuildEnv, mockTest, mockValidsAdjForChildBFS, mockChildBFS, mockNextPosToMove, mockDirtyBFS, mockGetPlaceOnCorralAux, mockManhantanDistance, mockMoveAgentToCorral, mockGetPosToMoveChild, mockAgentMoveCase1, mockAgentMoveCase4, mockMoveOneAgent, mockMoveAgents, mockRefactorObstacles, mockMoveOneChild, moveChilds, moveAgents, getPercentDirty, mockAddRandomDirty, Env (..))
-import Items.Utils (mockBuildCorralAux, mockMakeAdjMax, randomList, mockLenght, mockMakePairs)
-import Items.Child (mockUpdateChild)
-import Items.Agent (mockAgentGetChild, mockAgentLeaveChild)
-import Items.Dirt (mockRemoveDirty)
+import Items.Enviroment (wrapIsEmpty, wrapBuildCorral, wrapBuildChildren, buildEnv, wrapBuildEnv, wrapTest, wrapValidsAdjForChildBFS, wrapChildBFS, wrapNextPosToMove, wrapDirtyBFS, wrapGetPlaceOnCorralAux, wrapManhantanDistance, wrapMoveAgentToCorral, wrapGetPosToMoveChild, wrapAgentMoveCase1, wrapAgentMoveCase4, wrapMoveOneAgent, wrapMoveAgents, wrapRefactorObstacles, wrapMoveOneChild, moveChilds, moveAgents, getPercentDirty, wrapAddRandomDirty, Env (..))
+import Items.Utils (wrapBuildCorralAux, wrapMakeAdjMax, randomList, wrapLenght, wrapMakePairs)
+import Items.Child (wrapUpdateChild)
+import Items.Agent (wrapAgentGetChild, wrapAgentLeaveChild)
+import Items.Dirt (wrapRemoveDirty)
 
 import System.Random (StdGen, newStdGen, getStdGen)
 import Control.Monad (when)
@@ -14,96 +14,96 @@ main :: IO()
 main = do
     g <- newStdGen
 
-    -- let mock1 = mockIsEmpty
-    -- print mock1
+    -- let wrap1 = wrapIsEmpty
+    -- print wrap1
 
-    -- let mock2 = mockBuildCorralAux 
-    -- print mock2
+    -- let wrap2 = wrapBuildCorralAux 
+    -- print wrap2
 
-    -- let mock3 = mockMakeAdjMax
-    -- print mock3
+    -- let wrap3 = wrapMakeAdjMax
+    -- print wrap3
 
-    -- let mock4 = mockBuildCorral
-    -- print mock4
+    -- let wrap4 = wrapBuildCorral
+    -- print wrap4
 
-    -- let mock5 = mockBuildChildren
-    -- print mock5
+    -- let wrap5 = wrapBuildChildren
+    -- print wrap5
 
-    -- let mock6 = mockLenght
-    -- print mock6
+    -- let wrap6 = wrapLenght
+    -- print wrap6
 
     -- let c = min 45 1
     -- print c
 
-    -- let mock7 = mockBuildEnv g
-    -- print mock7
+    -- let wrap7 = wrapBuildEnv g
+    -- print wrap7
 
-    -- let mock8 = mockMakePairs
-    -- print mock8
+    -- let wrap8 = wrapMakePairs
+    -- print wrap8
 
-    -- let mock9 = mockTest
-    -- print mock9
+    -- let wrap9 = wrapTest
+    -- print wrap9
 
-    -- let mock10 = mockValidsAdjForChildBFS
-    -- print mock10
+    -- let wrap10 = wrapValidsAdjForChildBFS
+    -- print wrap10
 
-    -- let mock11 = mockChildBFS
-    -- print mock11
+    -- let wrap11 = wrapChildBFS
+    -- print wrap11
 
-    -- let mock12 = mockNextPosToMove
-    -- print mock12
+    -- let wrap12 = wrapNextPosToMove
+    -- print wrap12
 
-    -- let mock13 = mockDirtyBFS
-    -- print mock13
+    -- let wrap13 = wrapDirtyBFS
+    -- print wrap13
 
-    -- let mock14 = mockGetPlaceOnCorralAux
-    -- print mock14
+    -- let wrap14 = wrapGetPlaceOnCorralAux
+    -- print wrap14
 
-    -- let mock15 = mockMoveAgentToCorral
-    -- print mock15
+    -- let wrap15 = wrapMoveAgentToCorral
+    -- print wrap15
 
-    -- let mock16 = mockManhantanDistance
-    -- print mock16
+    -- let wrap16 = wrapManhantanDistance
+    -- print wrap16
 
-    -- let mock17 = mockGetPosToMoveChild g
-    -- print mock17
+    -- let wrap17 = wrapGetPosToMoveChild g
+    -- print wrap17
 
-    -- let mock18 = mockUpdateChild
-    -- print mock18
+    -- let wrap18 = wrapUpdateChild
+    -- print wrap18
 
-    -- let mock19 = mockAgentGetChild
-    -- print mock19
+    -- let wrap19 = wrapAgentGetChild
+    -- print wrap19
 
-    -- let mock20 = mockAgentLeaveChild
-    -- print mock20
+    -- let wrap20 = wrapAgentLeaveChild
+    -- print wrap20
     
-    -- let mock21 = mockRemoveDirty
-    -- print mock21
+    -- let wrap21 = wrapRemoveDirty
+    -- print wrap21
 
-    -- let mock22 = mockAgentMoveCase1
-    -- print mock22
+    -- let wrap22 = wrapAgentMoveCase1
+    -- print wrap22
 
-    -- let mock23 = mockAgentMoveCase4
-    -- print mock23
+    -- let wrap23 = wrapAgentMoveCase4
+    -- print wrap23
 
-    -- let mock24 = mockMoveOneAgent
-    -- print mock24
+    -- let wrap24 = wrapMoveOneAgent
+    -- print wrap24
 
-    -- let mock25 = mockMoveAgents
-    -- print mock25
+    -- let wrap25 = wrapMoveAgents
+    -- print wrap25
 
-    -- let mock26 = mockRefactorObstacles
-    -- print mock26
+    -- let wrap26 = wrapRefactorObstacles
+    -- print wrap26
 
-    -- let mock27 = mockMoveOneChild g
-    -- print mock27
+    -- let wrap27 = wrapMoveOneChild g
+    -- print wrap27
 
     -- let rnd = randomList 6 g
     -- print (take 4 rnd)
     -- let g1 = sum1 getCar 3 in print g1[(Int, Int)]
 
-    -- let mock28 = mockAddRandomDirty (randomList 9 g)
-    -- print mock28
+    -- let wrap28 = wrapAddRandomDirty (randomList 9 g)
+    -- print wrap28
 
     simulationType1
 

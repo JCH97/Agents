@@ -5,12 +5,12 @@ module Items.Utils (
     address,
     addressMax,
     buildCorralAux,
-    mockBuildCorralAux,
-    mockMakeAdjMax,
-    mockLenght,
+    wrapBuildCorralAux,
+    wrapMakeAdjMax,
+    wrapLenght,
     makeAdjMax,
     makePairs,
-    mockMakePairs,
+    wrapMakePairs,
     lenght
 ) where 
 
@@ -48,27 +48,27 @@ buildCorralAux stack@(x : xs) checked dim@(dx, dy) count =
         else buildCorralAux xs checked dim count
         
 
-mockBuildCorralAux :: [(Int, Int)]
-mockBuildCorralAux = 
+wrapBuildCorralAux :: [(Int, Int)]
+wrapBuildCorralAux = 
     buildCorralAux [(1, 1)] [] (10, 10) 5
 
-mockMakeAdjMax :: [(Int, Int)]
-mockMakeAdjMax = makeAdjMax (1, 1)
+wrapMakeAdjMax :: [(Int, Int)]
+wrapMakeAdjMax = makeAdjMax (1, 1)
 
 lenght :: [a] -> Int
 lenght [] = 0
 lenght (x : xs) = 1 + lenght xs
 
-mockLenght :: Int
-mockLenght = lenght [1, 2, 3, 4, 5]
+wrapLenght :: Int
+wrapLenght = lenght [1, 2, 3, 4, 5]
 
 -- empareja el segundo parametro con cada uno de los que esta en el array
 -- ej: [(1, 1), (1, 2), (1, 3)] (5, 5) => [( (1, 1), (5, 5) ), ( (1, 2), (5, 5) ), ( (1, 3), (5, 5) )]
 makePairs :: [(Int, Int)] -> (Int, Int) -> [((Int, Int), (Int, Int))]
 makePairs pairs tuple = [(k, tuple) | k <- pairs]
 
-mockMakePairs :: [((Int, Int), (Int, Int))]
-mockMakePairs = makePairs [(1, 1), (2, 2)] (3, 3)
+wrapMakePairs :: [((Int, Int), (Int, Int))]
+wrapMakePairs = makePairs [(1, 1), (2, 2)] (3, 3)
 
 -- -- mxm, take
 -- getListRnd :: Int -> Int -> [Int] 

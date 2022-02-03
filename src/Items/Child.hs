@@ -3,7 +3,7 @@ module Items.Child (
     existChild,
     existChildOutCorral,
     updateChild,
-    mockUpdateChild, 
+    wrapUpdateChild, 
     removeChild
  ) where
 
@@ -25,8 +25,8 @@ updateChild :: Child ->  (Int, Int) -> (Int, Int) -> Child
 updateChild Child { value = val } oldPos newPos = let temp = [t | t <- val, t /= oldPos]
                                                   in Child { value = (newPos : temp) }
 
-mockUpdateChild :: Child
-mockUpdateChild = updateChild Child { value = [(1, 2), (2, 3), (1, 4)] }
+wrapUpdateChild :: Child
+wrapUpdateChild = updateChild Child { value = [(1, 2), (2, 3), (1, 4)] }
                               (2, 3)
                               (5, 6)
 

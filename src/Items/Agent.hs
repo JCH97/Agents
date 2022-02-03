@@ -3,8 +3,8 @@ module Items.Agent (
     existAgent,
     updateAgent,
     agentGetChild,
-    mockAgentGetChild,
-    mockAgentLeaveChild,
+    wrapAgentGetChild,
+    wrapAgentLeaveChild,
     agentLeaveChild
 ) where
 
@@ -37,12 +37,12 @@ agentGetChild :: Agent -> (Int, Int) -> Agent
 agentGetChild Agent { value = val , carrying = c} agentPos = let temp = [t | t <- c, t /= agentPos]
                                                              in Agent { value = val, carrying = (agentPos: temp) }
 
-mockAgentGetChild :: Agent
-mockAgentGetChild = agentGetChild Agent { value = [(1, 2), (2, 3)], carrying = [(2, 3), (1, 2)] } 
+wrapAgentGetChild :: Agent
+wrapAgentGetChild = agentGetChild Agent { value = [(1, 2), (2, 3)], carrying = [(2, 3), (1, 2)] } 
                                   (1, 2)
 
 agentLeaveChild :: Agent -> (Int, Int) -> Agent
 agentLeaveChild Agent { value = val, carrying = c } agentPos = Agent { value = val, carrying = [t | t <- c, t /= agentPos] }
 
-mockAgentLeaveChild :: Agent
-mockAgentLeaveChild = agentLeaveChild Agent { value = [(1, 2)], carrying = [(1, 2)] } (1, 2)
+wrapAgentLeaveChild :: Agent
+wrapAgentLeaveChild = agentLeaveChild Agent { value = [(1, 2)], carrying = [(1, 2)] } (1, 2)
