@@ -107,3 +107,5 @@ Para realizar una especie de comparación se presenta ahora un ejemplo para un t
 |   28.205128205128204    |   20.512820512820515    |
 
 ​                                        **% de suciedad del tablero luego de terminada cada simulación**
+
+Notar que para ambas ejecuaciones cada 100 iteraciones se realiza un cambio en el ambiente.
