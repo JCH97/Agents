@@ -6,7 +6,7 @@
 
 **Modelación del problema y enfoque de los agentes:**
 
-​	En el problema que se presenta existen muchos enfoques, todos propensos a fallas y  a que en determinadas circunstancias impidan que se concrete el objetivo, lo ideal sería quiza tener un agente proactivo, reactivo y sociable que sea capaz de analizar todo el ambiente que le rodea, su historia y responder en consecuencia de lo que a largo plazo pudiera ser mejor para el medio (o a corto, depende de lo que se persiga). 
+​	En el problema que se presenta existen muchos enfoques, todos propensos a fallas y a que en determinadas circunstancias impidan que se concrete el objetivo, lo ideal sería quiza tener un agente proactivo, reactivo y sociable que sea capaz de analizar todo el ambiente que le rodea así como su historia y responder en consecuencia de lo que a largo plazo pudiera ser mejor para el medio (o a corto, depende de lo que se persiga). 
 
 ​	Una característica que hubiera aportado una notable mejora al proyecto que se presenta, fuera brindar un agente sociable, que sea capaz de interactúar con el resto de los agentes del ambiente y de cierto modo, acordar las acciones que va a realizar cada uno; puesto que en el problema en cuestión si dos agentes deciden ir a recoger al mismo niño o limpiar la misma basura se está generando incongruencias en el medio, por decirlo de alguna forma, y pérdida de tiempo; ya que que hubiera sido mejor que se hubieran percatado que los dos iban a realizar la misma actividad y por tanto responder en consecuencia. Por supuesto, como todo, aquí también se presentan problemas a resolver, ¿ qué pasa si a cada agente no se dirige a la misma casilla del tablero, pero hubiera sido mejor que el agente A fuera a la casilla $X_1$ y el agente B fuera a la casilla $X_2$ ? ¿ de qué forma aborar esa problemática y como controlarla ?
 
@@ -38,7 +38,7 @@ Tipo 2: El agente de tipo 2 se rige por las siguientes pautas
 
 ​	De cualquier forma los dos enfoques, pueden traer incumplimientos de la función principal de la simulación, ya que todo depende de la cantidad de agentes y niños que se posea, las dimensiones del tablero y por supuesto la cantidad de rondas que se permita simular el funcionamiento.
 
-​	Mucha es la teoría que existe detrás del tema de agentes y existen muchas maneras de describir el entorno y de quizá trazar funciones que expresen algún tipo de métrica y ponderen por tanto el peso de las acciones, para en todo momento, poder realizar lo mejor para el medio; pero incluso esas funciones no son perfectas y puede darse el caso de que bajo ciertas circunstancias no arrojen los mejores resultados o los esperados quizá; por ello se escogió el enfoque propuesto, considerando siempre las dimensiones del problema planteado, que no son tan grandes, y que se pueda hasta cierto punto cumplir el objetivo.
+​	Mucha es la teoría que existe detrás del tema de agentes y existen muchas maneras de describir el entorno y de quizá trazar funciones que expresen algún tipo de métrica y ponderen, por tanto, el peso de las acciones, para en todo momento, poder realizar lo mejor para el medio; pero incluso esas funciones no son perfectas y puede darse el caso de que bajo ciertas circunstancias no arrojen los mejores resultados o los esperados quizá; por ello se escogió el enfoque propuesto, considerando siempre las dimensiones del problema planteado, que no son tan grandes, y que se pueda hasta cierto punto cumplir el objetivo.
 
 **Ideas de implementación: **
 
