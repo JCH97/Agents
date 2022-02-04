@@ -1,7 +1,7 @@
 module Main where
 
 import Lib ()
-import Items.Enviroment (wrapIsEmpty, wrapBuildCorral, wrapBuildChildren, buildEnv, wrapBuildEnv, wrapTest, wrapValidsAdjForChildBFS, wrapChildBFS, wrapNextPosToMove, wrapDirtyBFS, wrapGetPlaceOnCorralAux, wrapManhantanDistance, wrapMoveAgentToCorral, wrapGetPosToMoveChild, wrapAgentMoveCase1, wrapAgentMoveCase4, wrapMoveOneAgent, wrapMoveAgents, wrapRefactorObstacles, wrapMoveOneChild, moveChilds, moveAgents, getPercentDirty, wrapAddRandomDirty, Env (..))
+import Items.Enviroment (wrapIsEmpty, wrapBuildCorral, wrapBuildChildren, buildEnv, wrapBuildEnv, wrapTest, wrapValidsAdjForChildBFS, wrapChildBFS, wrapNextPosToMove, wrapDirtyBFS, wrapGetPlaceOnCorralAux, wrapManhantanDistance, wrapMoveAgentToCorral, wrapGetPosToMoveChild, wrapAgentMoveCase1, wrapAgentMoveCase4, wrapMoveOneAgent, wrapMoveAgents, wrapRefactorObstacles, wrapMoveOneChild, moveChilds, moveAgents, getPercentDirty, wrapAddRandomDirty, addRandmoDirty, moveAgentsType2, Env (..))
 import Items.Utils (wrapBuildCorralAux, wrapMakeAdjMax, randomList, wrapLenght, wrapMakePairs)
 import Items.Child (wrapUpdateChild)
 import Items.Agent (wrapAgentGetChild, wrapAgentLeaveChild)
@@ -105,29 +105,74 @@ main = do
     -- let wrap28 = wrapAddRandomDirty (randomList 9 g)
     -- print wrap28
 
+    print "Simulation type 1"
+    runSimulations1 10
+
+    print "Simulation type 2"
+    runSimulations2 10
+
+runSimulations1 :: Int -> IO()
+runSimulations1 0 = print "SIMULATIONS TYPE 1 COMPLETED"
+runSimulations1 count = do
     simulationType1
+    runSimulations1 (count - 1)
+
+runSimulations2 :: Int -> IO()
+runSimulations2 0 = print "SIMULATIONS TYPE 2 COMPLETED"
+runSimulations2 count = do
+    simulationType2
+    runSimulations2 (count - 1) 
 
 -- dim, childrenAmount, ObstacleAmount, AgentsAmount, DirtyAmount, Generator
 simulationType1 :: IO()
 simulationType1 = do
     g <- newStdGen
-    let env = buildEnv (5, 5) 3 2 2 5 g
+    let env = buildEnv (7, 7) 5 2 3 5 g
 
-    print env
+    -- print env
 
-    let finalEnv = simulationType1Aux env 1000 g
+    let finalEnv = simulationType1Aux env 2000 g
     let percent = getPercentDirty finalEnv
 
-    print finalEnv
+    -- print finalEnv
     print percent
     
 simulationType1Aux :: Env -> Int -> StdGen -> Env
 simulationType1Aux env 0 _ = env
 simulationType1Aux env count gen = do 
 
-    -- let updtEnv = 
-
     let newEnv1 = moveChilds env gen
     let newEnv2 = moveAgents newEnv1
+    
+    let finalEnv = changeEnv newEnv2 count (randomList 7 gen)
 
-    simulationType1Aux newEnv2 (count - 1) gen
+    simulationType1Aux finalEnv (count - 1) gen
+
+
+simulationType2 :: IO()
+simulationType2 = do
+    g <- newStdGen
+    let env = buildEnv (7, 7) 5 2 3 5 g
+
+    -- print env
+
+    let finalEnv = simulationType2Aux env 2000 g
+    let percent = getPercentDirty finalEnv
+
+    -- print finalEnv
+    print percent
+    
+simulationType2Aux :: Env -> Int -> StdGen -> Env
+simulationType2Aux env 0 _ = env
+simulationType2Aux env count gen = do 
+
+    let newEnv1 = moveChilds env gen
+    let newEnv2 = moveAgentsType2 newEnv1
+
+    let finalEnv = changeEnv newEnv2 count (randomList 7 gen)
+
+    simulationType2Aux finalEnv (count - 1) gen
+
+changeEnv :: Env -> Int -> [Int] -> Env
+changeEnv env iter rand | mod iter 100 == 0 = addRandmoDirty env 5 10 rand
+                        | otherwise = env

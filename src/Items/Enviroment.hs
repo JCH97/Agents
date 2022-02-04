@@ -28,7 +28,9 @@ module Items.Enviroment (
     wrapRefactorObstacles,
     wrapMoveOneChild,
     getPercentDirty,
-    wrapAddRandomDirty
+    wrapAddRandomDirty,
+    moveAgentsType2,
+    addRandmoDirty
 ) where
 
 
@@ -561,6 +563,32 @@ moveOneAgent env@Env { children = ch, agents = Agent unused1 carrying, corral = 
                             = agentMoveCase3 env agentPos
                         | otherwise = agentMoveCase4 env agentPos
 
+
+moveAgentsType2 :: Env -> Env
+moveAgentsType2 env@Env { children = ch, agents = Agent value _, corral = co,
+                            dirty = di, obstacles = ob, dim = d, ignorePositions = ig }
+                         = moveAgentsAuxType2 env value
+
+-- env, posicionesDeLosRobots
+moveAgentsAuxType2 :: Env -> [(Int, Int)] -> Env
+moveAgentsAuxType2 env [] = env
+moveAgentsAuxType2 env (p: ps) = let newEnv = moveOneAgentType2 env p
+                                in moveAgentsAuxType2 newEnv ps
+
+moveOneAgentType2 :: Env -> (Int, Int) -> Env
+moveOneAgentType2 env@Env { children = ch, agents = Agent unused1 carrying, corral = co,
+                       dirty = di, obstacles = ob, dim = d, ignorePositions = ig } 
+                    agentPos
+                        | contains carrying agentPos
+                            = agentMoveCase1 env agentPos (getPlaceOnCorral env)
+                        | existDirty di agentPos
+                            =  agentMoveCase2 env agentPos
+                        | existChild ch agentPos && not (contains ig agentPos)
+                            = agentMoveCase3 env agentPos
+                        | otherwise = agentMoveCase4Type2 env agentPos
+
+
+
 -- env, startAgentPos, posToLeaveChild
 -- Case 1: El robot tiene un ninno cargado => hay que moverlo pal corral
 agentMoveCase1 :: Env -> (Int, Int) -> (Int, Int) -> Env
@@ -699,6 +727,39 @@ wrapAgentMoveCase4 = agentMoveCase4 Env {
                                     }
                                     (0, 0)
 
+
+agentMoveCase4Type2 :: Env -> (Int, Int) -> Env
+agentMoveCase4Type2 env@Env { children = ch, agents = ag, corral = co,
+                            dirty = di, obstacles = ob, dim = d, ignorePositions = ig }
+                    pos
+                    | existDirtyInBoard di = 
+                                let newPosAgent = dirtyBFS env pos [] [pos] []
+                                    newAgents = updateAgent ag pos newPosAgent
+                                in Env {
+                                        children = ch,
+                                        agents = newAgents,
+                                        corral = co,
+                                        dirty = di,
+                                        obstacles = ob,
+                                        dim = d,
+                                        ignorePositions = ig
+                                    }
+                    | existChildOutCorral ch = 
+                                let newPosAgent = childBFS env pos [] [pos] []
+                                    newAgents = updateAgent ag pos newPosAgent
+                                in Env {
+                                            children = ch,
+                                            agents = newAgents,
+                                            corral = co,
+                                            dirty = di,
+                                            obstacles = ob,
+                                            dim = d,
+                                            ignorePositions = ig
+                                        }
+                    | otherwise = env
+
+
+
 wrapMoveOneAgent :: Env
 wrapMoveOneAgent = moveOneAgent Env { 
                                         children = Child [(2, 4)],
@@ -744,7 +805,7 @@ addRandmoDirty env@Env { children = ch, agents = ag, corral = co,
                 amount
                 tries
                 rnd@(x: y : xs)
-                    | isEmpty env (x, y) = let updatedDirty = ((x, y) : di)
+                    | isValidPos d (x, y) && isEmpty env (x, y) = let updatedDirty = ((x, y) : di)
                                             in addRandmoDirty Env {
                                                                     children = ch,
                                                                     agents = ag,
