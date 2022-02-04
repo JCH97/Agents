@@ -70,7 +70,7 @@ Tipo 2: El agente de tipo 2 se rige por las siguientes pautas
 stack build && stack exec Agents-exe
 ```
 
- 	Para realizar una especie de comparación se presenta ahora un ejemplo para un tablero de dimensiones (7, 7) que cuenta con 5 niños, 2 obstáculos, 3 agentes y 5 casillas sucias al inicio. Se presenta para los dos tipos de agentes los resultados obtenidos luego de realizar 10 simulaciones con esos parámetros y cada simulación 1000 iteraciones del entorno.
+Para realizar una especie de comparación se presenta ahora un ejemplo para un tablero de dimensiones (7, 7) que cuenta con 5 niños, 2 obstáculos, 3 agentes y 5 casillas sucias al inicio. Se presenta para los dos tipos de agentes los resultados obtenidos luego de realizar 10 simulaciones con esos parámetros y cada simulación 1000 iteraciones del entorno.
 
 | Simulation Agent Type 1 | Simulation Agent Type 2 |
 | :---------------------: | :---------------------: |
